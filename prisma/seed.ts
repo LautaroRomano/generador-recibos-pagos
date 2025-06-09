@@ -1,0 +1,27 @@
+// prisma/seed.ts
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+async function main() {
+  const client = await prisma.client.create({
+    data: {
+      fullName: 'Juan Díaz',
+      email: 'juan.diaz@email.com',
+    },
+  });
+
+  await prisma.payment.create({
+    data: {
+      clientId: client.id,
+      date: new Date('2025-06-03'),
+      amount: 89000,
+      concept: 'Pago de expensa extraordinaria p/ Reorganización del Club',
+    },
+  });
+
+  console.log('Datos cargados');
+}
+
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());
