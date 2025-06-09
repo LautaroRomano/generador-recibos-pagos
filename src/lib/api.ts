@@ -13,6 +13,9 @@ const api = axios.create({
 export type CreateClientDTO = {
   fullName: string;
   email: string;
+  street?: string;
+  lote?: string;
+  phone?: string;
 };
 
 export type CreatePaymentDTO = {
@@ -30,6 +33,10 @@ export const clientApi = {
   },
   getAll: async (): Promise<Client[]> => {
     const response = await api.get<Client[]>("/clients");
+    return response.data;
+  },
+  update: async (id: string, clientData: CreateClientDTO): Promise<Client> => {
+    const response = await api.put<Client>(`/clients/${id}`, clientData);
     return response.data;
   },
   createPayment: async (paymentData: CreatePaymentDTO): Promise<Payment> => {

@@ -9,19 +9,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { UserPlus, Search } from "lucide-react";
+import { UserPlus, Search, Pencil } from "lucide-react";
 import type { Client } from "@/types";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface ClientTableProps {
   clients: Client[];
   onRegisterPayment: (clientId: string) => void;
+  onEditClient: (client: Client) => void;
 }
 
 export default function ClientTable({
   clients,
   onRegisterPayment,
+  onEditClient,
 }: ClientTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -29,7 +33,8 @@ export default function ClientTable({
     const searchLower = searchQuery.toLowerCase();
     return (
       client.fullName.toLowerCase().includes(searchLower) ||
-      client.email.toLowerCase().includes(searchLower)
+      client.email.toLowerCase().includes(searchLower) ||
+      (client.lote?.toLowerCase().includes(searchLower) ?? false)
     );
   });
 
@@ -50,6 +55,8 @@ export default function ClientTable({
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead>Correo electrónico</TableHead>
+              <TableHead>Lote</TableHead>
+              <TableHead>Último pago</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -57,7 +64,7 @@ export default function ClientTable({
             {filteredClients.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={3}
+                  colSpan={5}
                   className="text-center py-6 text-muted-foreground"
                 >
                   {searchQuery
@@ -72,7 +79,21 @@ export default function ClientTable({
                     {client.fullName}
                   </TableCell>
                   <TableCell>{client.email}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell>{client.lote || "-"}</TableCell>
+                  <TableCell>
+                    {client.lastPaymentDate
+                      ? format(new Date(client.lastPaymentDate), "PPP", { locale: es })
+                      : "Sin pagos"}
+                  </TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onEditClient(client)}
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Editar
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"

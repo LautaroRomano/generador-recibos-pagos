@@ -35,6 +35,8 @@ const paymentSchema = z.object({
   concept: z
     .string()
     .min(3, { message: "El concepto debe tener al menos 3 caracteres" }),
+  paymentType: z.enum(["Efectivo", "Transferencia", "Débito", "Crédito"]),
+  amountText: z.string().optional(),
 });
 
 type PaymentFormValues = z.infer<typeof paymentSchema>;
@@ -59,6 +61,8 @@ export default function PaymentModal({
       date: new Date().toISOString().split("T")[0],
       amount: 0,
       concept: "",
+      paymentType: "Transferencia",
+      amountText: "",
     },
   });
 
@@ -70,7 +74,11 @@ export default function PaymentModal({
   }, [client, form]);
 
   const onSubmit = (data: PaymentFormValues) => {
-    onSavePayment(data);
+    onSavePayment({
+      ...data,
+      clientName: client?.fullName || "",
+      amountText: data.amountText || "",
+    });
     form.reset();
   };
 
@@ -125,6 +133,28 @@ export default function PaymentModal({
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="paymentType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Pago</FormLabel>
+                    <FormControl>
+                      <select
+                        className="w-full p-2 border rounded-md"
+                        {...field}
+                      >
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Débito">Débito</option>
+                        <option value="Crédito">Crédito</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

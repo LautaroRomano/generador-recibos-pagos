@@ -8,10 +8,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { clientId, date, amount, concept } = body;
+    const { clientId, date, amount, concept, paymentType } = body;
 
     // Validate required fields
-    if (!clientId || !date || !amount || !concept) {
+    if (!clientId || !date || !amount || !concept || !paymentType) {
       return NextResponse.json(
         { error: "Todos los campos son requeridos" },
         { status: 400 }
@@ -39,6 +39,8 @@ export async function POST(request: Request) {
         date: isoDate,
         amount,
         concept,
+        paymentType,
+        amountText: numberToText(amount),
       },
     });
 
@@ -56,6 +58,8 @@ export async function POST(request: Request) {
     }).format(amount);
 
     const amountInWords = numberToText(amount);
+
+    const today = new Date();
 
     // Send email receipt
     await resend.emails.send({
@@ -81,7 +85,7 @@ export async function POST(request: Request) {
       <td><strong>Señor:</strong> ${client.fullName}</td>
     </tr>
     <tr>
-      <td><strong>Domicilio:</strong> ............................................................</td>
+      <td><strong>Domicilio:</strong> ${client.street}</td>
     </tr>
     <tr>
       <td style="padding-top: 10px;"><strong>Recibí la suma de:</strong> ${amountInWords} (${formattedAmount})</td>
@@ -90,7 +94,7 @@ export async function POST(request: Request) {
       <td><strong>En concepto de:</strong> ${concept}</td>
     </tr>
     <tr>
-      <td style="padding-top: 10px;"><strong>Forma de pago:</strong> Transferencia</td>
+      <td style="padding-top: 10px;"><strong>Forma de pago:</strong> ${paymentType}</td>
     </tr>
   </table>
 
@@ -105,7 +109,7 @@ export async function POST(request: Request) {
   </div>
 
   <div style="margin-top: 30px; font-size: 12px; text-align: center;">
-    Documento no válido como factura - Impresión: 03/2025
+    Documento no válido como factura - Impresión: ${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}
   </div>
 </div>
 
@@ -124,6 +128,9 @@ export async function POST(request: Request) {
 
 // GET endpoint to retrieve all payments
 export async function GET() {
-  const payments = await prisma.payment.findMany();
+  const payments = await prisma.payment.findMany({
+    include: { client: true },
+    orderBy: { date: "desc" },
+  });
   return NextResponse.json(payments);
 }

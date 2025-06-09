@@ -4,6 +4,7 @@ import { useState } from "react";
 import ClientForm from "./client-form";
 import ClientTable from "./client-table";
 import PaymentModal from "./payment-modal";
+import EditClientModal from "./edit-client-modal";
 import { toast } from "sonner";
 import { clientApi } from "@/lib/api";
 import { Client, Payment } from "@/types";
@@ -14,6 +15,7 @@ export default function ClientManagement() {
   const [clients, setClients] = useState<Client[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const getClients = async () => {
@@ -39,6 +41,23 @@ export default function ClientManagement() {
     }
   };
 
+  // Función para editar un cliente
+  const handleEditClient = async (client: Omit<Client, "id">) => {
+    if (!selectedClient) return;
+
+    try {
+      const updatedClient = await clientApi.update(selectedClient.id, client);
+      setClients(clients.map(c => c.id === selectedClient.id ? updatedClient : c));
+      setIsEditModalOpen(false);
+      toast.success(`${client.fullName} ha sido actualizado correctamente.`);
+    } catch (error) {
+      toast.error(
+        "Error al actualizar el cliente. Por favor, intente nuevamente."
+      );
+      console.error("Error updating client:", error);
+    }
+  };
+
   // Función para registrar un pago
   const handleRegisterPayment = (clientId: string) => {
     const client = clients.find((c) => c.id === clientId);
@@ -46,6 +65,12 @@ export default function ClientManagement() {
       setSelectedClient(client);
       setIsPaymentModalOpen(true);
     }
+  };
+
+  // Función para abrir el modal de edición
+  const handleOpenEditModal = (client: Client) => {
+    setSelectedClient(client);
+    setIsEditModalOpen(true);
   };
 
   // Función para guardar un nuevo pago
@@ -67,6 +92,7 @@ export default function ClientManagement() {
           <ClientTable
             clients={clients}
             onRegisterPayment={handleRegisterPayment}
+            onEditClient={handleOpenEditModal}
           />
         </div>
       </section>
@@ -75,6 +101,13 @@ export default function ClientManagement() {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         onSavePayment={handleSavePayment}
+        client={selectedClient}
+      />
+
+      <EditClientModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleEditClient}
         client={selectedClient}
       />
     </div>

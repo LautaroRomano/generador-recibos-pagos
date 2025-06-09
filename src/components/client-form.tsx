@@ -10,6 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 const clientSchema = z.object({
   fullName: z.string().min(3, { message: "El nombre debe tener al menos 3 caracteres" }),
   email: z.string().email({ message: "Correo electrónico inválido" }),
+  street: z.string().optional(),
+  lote: z.string().optional(),
+  phone: z.string().optional(),
 })
 
 type ClientFormValues = z.infer<typeof clientSchema>
@@ -24,6 +27,9 @@ export default function ClientForm({ onAddClient }: ClientFormProps) {
     defaultValues: {
       fullName: "",
       email: "",
+      street: "",
+      lote: "",
+      phone: "",
     },
   })
 
@@ -58,6 +64,48 @@ export default function ClientForm({ onAddClient }: ClientFormProps) {
                 <FormLabel>Correo electrónico</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="correo@ejemplo.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="street"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Calle</FormLabel>
+                <FormControl>
+                  <Input placeholder="Calle" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lote"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Lote</FormLabel>
+                <FormControl>
+                  <Input placeholder="Lote" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Teléfono</FormLabel>
+                <FormControl>
+                  <Input placeholder="Teléfono" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
