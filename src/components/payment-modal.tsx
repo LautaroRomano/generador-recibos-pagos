@@ -76,7 +76,6 @@ export default function PaymentModal({
   const onSubmit = (data: PaymentFormValues) => {
     onSavePayment({
       ...data,
-      clientName: client?.fullName || "",
       amountText: data.amountText || "",
     });
     form.reset();
