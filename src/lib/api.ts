@@ -22,7 +22,10 @@ export type CreatePaymentDTO = {
   clientId: string;
   date: string;
   amount: number;
-  concept: string;
+  detail: string;
+  conceptType: string;
+  paymentType: string;
+  amountText: string;
 };
 
 // Client API endpoints
@@ -35,6 +38,10 @@ export const clientApi = {
     const response = await api.get<Client[]>("/clients");
     return response.data;
   },
+  getClientById: async (id: string): Promise<Client> => {
+    const response = await api.get<Client>(`/clients/${id}`);
+    return response.data;
+  },
   update: async (id: string, clientData: CreateClientDTO): Promise<Client> => {
     const response = await api.put<Client>(`/clients/${id}`, clientData);
     return response.data;
@@ -45,6 +52,10 @@ export const clientApi = {
   },
   getAllPayments: async (): Promise<Payment[]> => {
     const response = await api.get<Payment[]>("/payments");
+    return response.data;
+  },
+  getPaymentById: async (id: string): Promise<Payment> => {
+    const response = await api.get<Payment>(`/payments/${id}`);
     return response.data;
   },
   getPaymentsByClientId: async (clientId: string): Promise<Payment[]> => {

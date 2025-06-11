@@ -32,9 +32,10 @@ const paymentSchema = z.object({
   amount: z.coerce
     .number()
     .positive({ message: "El monto debe ser mayor a 0" }),
-  concept: z
+  conceptType: z.enum(["Mantenimiento", "Sociedad", "Expensa extraordinaria", "Otros"]),
+  detail: z
     .string()
-    .min(3, { message: "El concepto debe tener al menos 3 caracteres" }),
+    .min(3, { message: "El detalle debe tener al menos 3 caracteres" }),
   paymentType: z.enum(["Efectivo", "Transferencia", "Débito", "Crédito"]),
   amountText: z.string().optional(),
 });
@@ -44,7 +45,7 @@ type PaymentFormValues = z.infer<typeof paymentSchema>;
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSavePayment: (payment: Omit<Payment, "id">) => void;
+  onSavePayment: (payment: Omit<Payment, "id">) => Promise<Payment>;
   client: Client | null;
 }
 
@@ -60,7 +61,8 @@ export default function PaymentModal({
       clientId: "",
       date: new Date().toISOString().split("T")[0],
       amount: 0,
-      concept: "",
+      conceptType: "Mantenimiento",
+      detail: "",
       paymentType: "Transferencia",
       amountText: "",
     },
@@ -73,12 +75,21 @@ export default function PaymentModal({
     }
   }, [client, form]);
 
-  const onSubmit = (data: PaymentFormValues) => {
-    onSavePayment({
+  const onSubmit = async (data: PaymentFormValues) => {
+    // Llamar a la función para guardar el pago
+    const payment = await onSavePayment({
       ...data,
+      number: 0,
       amountText: data.amountText || "",
     });
+    
+    // Resetear el formulario
     form.reset();
+    
+    // Abrir la ventana de impresión en una nueva pestaña
+    if (payment && payment.id) {
+      window.open(`/receipts/print/${payment.id}`, '_blank');
+    }
   };
 
   return (
@@ -157,13 +168,35 @@ export default function PaymentModal({
 
               <FormField
                 control={form.control}
-                name="concept"
+                name="conceptType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Concepto</FormLabel>
+                    <FormLabel>Tipo de concepto</FormLabel>
+                    <FormControl>
+                      <select
+                        className="w-full p-2 border rounded-md"
+                        {...field}
+                      >
+                        <option value="Mantenimiento">Mantenimiento</option>
+                        <option value="Sociedad">Sociedad</option>
+                        <option value="Expensa extraordinaria">Expensa extraordinaria</option>
+                        <option value="Otros">Otros</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="detail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Describa el concepto del pago"
+                        placeholder="Descripción del pago"
                         className="resize-none"
                         {...field}
                       />

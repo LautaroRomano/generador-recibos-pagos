@@ -79,6 +79,7 @@ export default function ClientManagement() {
     setPayments([...payments, newPayment]);
     setIsPaymentModalOpen(false);
     toast.success("El pago ha sido registrado correctamente.");
+    return newPayment;
   };
 
   return (

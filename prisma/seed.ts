@@ -15,7 +15,8 @@ async function main() {
       clientId: client.id,
       date: new Date('2025-06-03'),
       amount: 89000,
-      concept: 'Pago de expensa extraordinaria p/ Reorganización del Club',
+      detail: 'Pago de expensa extraordinaria p/ Reorganización del Club',
+      conceptType: 'Expensa extraordinaria',
     },
   });
 

@@ -32,8 +32,10 @@ model Payment {
   paymentType String   @default("Transferencia")
   amount      Float
   amountText  String   @default("")
-  concept     String
+  detail      String
+  conceptType String   @default("Mantenimiento")
   receiptPdf  String?
+  number      Int      @default(0)
 }
 
 model Admin {

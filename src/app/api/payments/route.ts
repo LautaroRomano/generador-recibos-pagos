@@ -9,10 +9,17 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { clientId, date, amount, concept, paymentType } = body;
+    const { clientId, date, amount, detail, conceptType, paymentType } = body;
 
     // Validate required fields
-    if (!clientId || !date || !amount || !concept || !paymentType) {
+    if (
+      !clientId ||
+      !date ||
+      !amount ||
+      !detail ||
+      !conceptType ||
+      !paymentType
+    ) {
       return NextResponse.json(
         { error: "Todos los campos son requeridos" },
         { status: 400 }
@@ -33,15 +40,19 @@ export async function POST(request: Request) {
       );
     }
 
+    const countPayments = await prisma.payment.count();
+
     // Create payment
     const newPayment = await prisma.payment.create({
       data: {
         clientId,
         date: isoDate,
         amount,
-        concept,
+        detail,
+        conceptType,
         paymentType,
         amountText: numberToText(amount),
+        number:countPayments+1
       },
     });
 
@@ -60,17 +71,19 @@ export async function POST(request: Request) {
 
     // Send email receipt
     await resend.emails.send({
-      from: "Digicom <noreply@redapuntes.com>",
+      from: "Club Nautico y Pesca <noreply@redapuntes.com>",
       to: client.email || "",
-      subject: "Recibo de Pago - Digicom",
+      subject: "Recibo de Pago - Club Nautico y Pesca",
       react: EmailReceipt({
         clientName,
         clientStreet,
         amount,
         amountInWords,
-        concept,
+        detail,
+        conceptType,
         paymentType,
         formattedDate,
+        number: newPayment.number || 0
       }),
     });
 

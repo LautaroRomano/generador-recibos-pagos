@@ -1,62 +1,71 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function PUT(
+export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const body = await request.json();
-    const { fullName, email, street, lote, phone } = body;
-    const { id } = params;
+    const { id } = await params;
 
-    // Validate required fields
-    if (!fullName || !email) {
+    // Validar ID
+    if (!id) {
       return NextResponse.json(
-        { error: "Nombre completo y email son requeridos" },
+        { error: "ID de cliente requerido" },
         { status: 400 }
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Formato de email inválido" },
-        { status: 400 }
-      );
-    }
-
-    // Check if client exists
-    const existingClient = await prisma.client.findUnique({
+    // Buscar el cliente por ID
+    const client = await prisma.client.findUnique({
       where: { id },
     });
 
-    if (!existingClient) {
+    // Verificar si el cliente existe
+    if (!client) {
       return NextResponse.json(
         { error: "Cliente no encontrado" },
         { status: 404 }
       );
     }
 
-    // Check if email is already taken by another client
-    if (email !== existingClient.email) {
-      const emailExists = await prisma.client.findFirst({
-        where: {
-          email,
-          id: { not: id },
-        },
-      });
+    return NextResponse.json(client);
+  } catch (error) {
+    console.error("Error obteniendo cliente:", error);
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 }
+    );
+  }
+}
 
-      if (emailExists) {
-        return NextResponse.json(
-          { error: "El email ya está registrado" },
-          { status: 409 }
-        );
-      }
+// Endpoint para actualizar un cliente por ID
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const { fullName, email, street, lote, phone } = body;
+
+    // Validar ID
+    if (!id) {
+      return NextResponse.json(
+        { error: "ID de cliente requerido" },
+        { status: 400 }
+      );
     }
 
-    // Update client
+    // Validar campos requeridos
+    if (!fullName || !email) {
+      return NextResponse.json(
+        { error: "Nombre y email son requeridos" },
+        { status: 400 }
+      );
+    }
+
+    // Actualizar el cliente
     const updatedClient = await prisma.client.update({
       where: { id },
       data: {
@@ -70,7 +79,7 @@ export async function PUT(
 
     return NextResponse.json(updatedClient);
   } catch (error) {
-    console.error("Error updating client:", error);
+    console.error("Error actualizando cliente:", error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

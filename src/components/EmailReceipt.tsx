@@ -5,9 +5,11 @@ interface EmailReceiptProps {
   clientStreet: string;
   amount: number;
   amountInWords: string;
-  concept: string;
+  detail: string;
+  conceptType: string;
   paymentType: string;
   formattedDate: string;
+  number: number;
 }
 
 export const EmailReceipt = ({
@@ -15,9 +17,11 @@ export const EmailReceipt = ({
   clientStreet,
   amount,
   amountInWords,
-  concept,
+  detail,
+  conceptType,
   paymentType,
   formattedDate,
+  number
 }: EmailReceiptProps) => {
   // Formatear el monto para mostrar
   const formattedAmount = new Intl.NumberFormat("es-ES", {
@@ -49,12 +53,31 @@ export const EmailReceipt = ({
           borderBottom: "2px solid #0056b3",
         }}
       >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: "15px",
+          }}
+        >
+          <img
+            src="/logo.jpg" 
+            alt="Logo"
+            style={{
+              width: "100px",
+              height: "100px",
+            }}
+          />
+        </div>
         <h2
           style={{
             margin: "0",
             color: "#0056b3",
           }}
         >
+          CLUB NAUTICO Y PESCA
+          <br />
           <span
             style={{
               fontWeight: "normal",
@@ -115,9 +138,9 @@ export const EmailReceipt = ({
             }}
           >
             RECIBO N°:
-          </strong>{" "}
-          0001-00000000
-        </div>
+                      </strong>{" "}
+            0001-{Array.from({length: 6-number.toString().length},()=>"0").join("")}{number}
+          </div>
         <div
           style={{
             width: "50%",
@@ -238,7 +261,7 @@ export const EmailReceipt = ({
               color: "#333",
             }}
           >
-            {concept}
+            {conceptType}
           </span>
         </div>
         <div
@@ -261,6 +284,28 @@ export const EmailReceipt = ({
             }}
           >
             {paymentType}
+          </span>
+        </div>
+        <div
+          style={{
+            marginTop: "15px",
+          }}
+        >
+          <strong
+            style={{
+              color: "#333",
+              display: "inline-block",
+              width: "130px",
+            }}
+          >
+            Detalle:
+          </strong>
+          <span
+            style={{
+              color: "#333",
+            }}
+          >
+            {detail}
           </span>
         </div>
       </div>

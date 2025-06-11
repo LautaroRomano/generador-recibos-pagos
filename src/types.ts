@@ -13,8 +13,10 @@ export type Payment = {
   clientId: string;
   date: string;
   amount: number;
-  concept: string;
+  detail: string;
+  conceptType: string;
   paymentType: string;
   amountText: string;
-  client?: Client | null;
+  client?: Client | null; 
+  number: number;
 };

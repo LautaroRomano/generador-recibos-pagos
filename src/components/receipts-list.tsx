@@ -6,13 +6,17 @@ import { clientApi } from "@/lib/api";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Printer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import ViewPdf from "./print/ViewPdf";
 
 export default function ReceiptsList() {
   const [receipts, setReceipts] = useState<Payment[]>([]);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [clientSearch, setClientSearch] = useState<string>("");
+  const [printPdf, setPrintPdf] = useState<null | string>(null);
 
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -26,6 +30,10 @@ export default function ReceiptsList() {
 
     fetchReceipts();
   }, []);
+
+  const handlePrint = (id: string) => {
+    setPrintPdf(id);
+  };
 
   const filteredReceipts = receipts.filter((receipt) => {
     // Filter by date range
@@ -60,8 +68,18 @@ export default function ReceiptsList() {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">Recibos Generados</h2>
-
+      <div
+        className={`absolute top-0 left-0 w-full h-full bg-black/50 z-50 ${printPdf ? "block" : "hidden"}`}
+      >
+        <div className="flex justify-center items-center h-full">
+          <div className="bg-white rounded-lg shadow-md">
+            {printPdf && <ViewPdf id={printPdf} />}
+            <div className="flex p-2 justify-end">
+              <Button onClick={() => setPrintPdf(null)}>Cerrar</Button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="space-y-4 mb-6">
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -127,6 +145,12 @@ export default function ReceiptsList() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Tipo de Pago
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Detalle
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -142,10 +166,26 @@ export default function ReceiptsList() {
                   ${receipt.amount.toLocaleString()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {receipt.concept}
+                  {receipt.conceptType}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {receipt.paymentType}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {receipt.detail}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-1"
+                    onClick={() => handlePrint(receipt.id)}
+                  >
+                    <Printer className="h-4 w-4" />
+                    <span className="sr-only md:not-sr-only md:inline-block">
+                      Imprimir
+                    </span>
+                  </Button>
                 </td>
               </tr>
             ))}
