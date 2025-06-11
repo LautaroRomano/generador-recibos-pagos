@@ -39,7 +39,7 @@ export async function loginAdmin({ email, password }: LoginCredentials): Promise
     } else {
       throw new Error('Login failed');
     }
-  } catch (error: any) {
+  } catch (error: any) { 
     const message = error.response?.data?.error || 'An error occurred during login';
     throw new Error(message);
   }

@@ -6,6 +6,7 @@ export type Client = {
   lote?: string;
   phone?: string;
   lastPaymentDate?: string;
+  payments?: Payment[];
 };
 
 export type Payment = {

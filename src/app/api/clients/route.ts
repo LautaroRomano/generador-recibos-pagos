@@ -26,8 +26,8 @@ export async function POST(request: Request) {
     }
 
     // Check if email already exists
-    const clients = await prisma.client.findMany();
-    if (clients.some((client) => client.email === email)) {
+    const clients = await prisma.client.findMany(); 
+    if (clients.some((client: any) => client.email === email)) {
       return NextResponse.json(
         { error: "El email ya está registrado" },
         { status: 409 }
@@ -71,9 +71,9 @@ export async function GET() {
   });
 
   // Transform the data to include lastPaymentDate
-  const clientsWithLastPayment = clients.map((client) => ({
+  const clientsWithLastPayment = clients.map((client: any) => ({
     ...client,
-    lastPaymentDate: client.payments[0]?.date || null,
+    lastPaymentDate: client.payments?.[0]?.date || null,
     payments: undefined, // Remove the payments array from the response
   }));
 
