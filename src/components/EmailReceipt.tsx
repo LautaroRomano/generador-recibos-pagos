@@ -53,7 +53,7 @@ export const EmailReceipt = ({
           borderBottom: "2px solid #0056b3",
         }}
       >
-        <div
+        <div // Logo
           style={{
             display: "flex",
             justifyContent: "center",
@@ -67,6 +67,8 @@ export const EmailReceipt = ({
             style={{
               width: "100px",
               height: "100px",
+              display: "block",
+              margin: "0 auto"
             }}
           />
         </div>
