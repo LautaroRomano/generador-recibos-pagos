@@ -71,7 +71,7 @@ export async function POST(request: Request) {
 
     // Send email receipt
     await resend.emails.send({
-      from: "Club Nautico y Pesca <noreply@redapuntes.com>",
+      from: "Club Nautico y Pesca <noreply@digicom.net.ar>",
       to: client.email || "",
       subject: "Recibo de Pago - Club Nautico y Pesca",
       react: EmailReceipt({

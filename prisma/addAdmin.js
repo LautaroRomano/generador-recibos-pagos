@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Default admin credentials - can be customized
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
-  const adminPassword = process.env.ADMIN_PASSWORD || "admin123456";
+  const adminEmail = process.env.ADMIN_EMAIL || "admin@digicom.net.ar";
+  const adminPassword = process.env.ADMIN_PASSWORD || "Digicone444";
   const adminName = process.env.ADMIN_NAME || "Administrator";
 
   try {

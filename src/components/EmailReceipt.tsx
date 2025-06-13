@@ -62,7 +62,7 @@ export const EmailReceipt = ({
           }}
         >
           <img
-            src="/logo.jpg" 
+            src="https://generador-recibos-pagos.vercel.app/logo.jpg" 
             alt="Logo"
             style={{
               width: "100px",
