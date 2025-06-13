@@ -87,9 +87,9 @@ export default function PaymentModal({
     form.reset();
     
     // Abrir la ventana de impresión en una nueva pestaña
-    if (payment && payment.id) {
-      window.open(`/receipts/print/${payment.id}`, '_blank');
-    }
+    // if (payment && payment.id) {
+    //   window.open(`/receipts/print/${payment.id}`, '_blank');
+    // }
   };
 
   return (
