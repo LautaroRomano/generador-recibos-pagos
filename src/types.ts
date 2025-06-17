@@ -20,4 +20,10 @@ export type Payment = {
   amountText: string;
   client?: Client | null; 
   number: number;
+  concepts: Array<{
+    id: string;
+    conceptType: string;
+    amount: number;
+    detail: string;
+  }>;
 };

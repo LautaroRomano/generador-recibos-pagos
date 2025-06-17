@@ -25,17 +25,29 @@ model Client {
 }
 
 model Payment {
-  id          String   @id @default(uuid())
-  clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
-  date        DateTime
-  paymentType String   @default("Transferencia")
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  date      DateTime
+  number    Int
+  paymentType String
+  amountText String?
+  concepts  PaymentConcept[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentConcept {
+  id          String   @id @default(cuid())
+  paymentId   String
+  payment     Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  conceptType String
   amount      Float
-  amountText  String   @default("")
   detail      String
-  conceptType String   @default("Mantenimiento")
-  receiptPdf  String?
-  number      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([paymentId])
 }
 
 model Admin {

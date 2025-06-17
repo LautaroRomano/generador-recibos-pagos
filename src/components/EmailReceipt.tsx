@@ -10,6 +10,11 @@ interface EmailReceiptProps {
   paymentType: string;
   formattedDate: string;
   number: number;
+  concepts: Array<{
+    conceptType: string;
+    amount: number;
+    detail: string;
+  }>;
 }
 
 export const EmailReceipt = ({
@@ -21,7 +26,8 @@ export const EmailReceipt = ({
   conceptType,
   paymentType,
   formattedDate,
-  number
+  number,
+  concepts
 }: EmailReceiptProps) => {
   // Formatear el monto para mostrar
   const formattedAmount = new Intl.NumberFormat("es-ES", {
@@ -53,7 +59,7 @@ export const EmailReceipt = ({
           borderBottom: "2px solid #0056b3",
         }}
       >
-        <div // Logo
+        <div
           style={{
             display: "flex",
             justifyContent: "center",
@@ -140,9 +146,9 @@ export const EmailReceipt = ({
             }}
           >
             RECIBO N°:
-                      </strong>{" "}
-            0001-{Array.from({length: 6-number.toString().length},()=>"0").join("")}{number}
-          </div>
+          </strong>{" "}
+          0001-{Array.from({length: 6-number.toString().length},()=>"0").join("")}{number}
+        </div>
         <div
           style={{
             width: "50%",
@@ -212,6 +218,41 @@ export const EmailReceipt = ({
             {clientStreet}
           </span>
         </div>
+
+        <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #ddd" }}>
+                <th style={{ textAlign: "left", padding: "8px", width: "40%" }}>Concepto</th>
+                <th style={{ textAlign: "right", padding: "8px", width: "30%" }}>Monto</th>
+                <th style={{ textAlign: "left", padding: "8px", width: "30%" }}>Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              {concepts.map((concept, index) => (
+                <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
+                  <td style={{ padding: "8px" }}>{concept.conceptType}</td>
+                  <td style={{ textAlign: "right", padding: "8px" }}>
+                    {new Intl.NumberFormat("es-ES", {
+                      style: "currency",
+                      currency: "ARS",
+                    }).format(concept.amount)}
+                  </td>
+                  <td style={{ padding: "8px" }}>{concept.detail}</td>
+                </tr>
+              ))}
+              <tr>
+                <td colSpan={2} style={{ textAlign: "right", padding: "8px", fontWeight: "bold" }}>
+                  Total:
+                </td>
+                <td style={{ textAlign: "right", padding: "8px", fontWeight: "bold" }}>
+                  {formattedAmount}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <div
           style={{
             margin: "15px 0 8px 0",
@@ -244,28 +285,7 @@ export const EmailReceipt = ({
             ({formattedAmount})
           </span>
         </div>
-        <div
-          style={{
-            marginBottom: "8px",
-          }}
-        >
-          <strong
-            style={{
-              color: "#333",
-              display: "inline-block",
-              width: "130px",
-            }}
-          >
-            En concepto de:
-          </strong>
-          <span
-            style={{
-              color: "#333",
-            }}
-          >
-            {conceptType}
-          </span>
-        </div>
+
         <div
           style={{
             marginTop: "15px",
@@ -286,28 +306,6 @@ export const EmailReceipt = ({
             }}
           >
             {paymentType}
-          </span>
-        </div>
-        <div
-          style={{
-            marginTop: "15px",
-          }}
-        >
-          <strong
-            style={{
-              color: "#333",
-              display: "inline-block",
-              width: "130px",
-            }}
-          >
-            Detalle:
-          </strong>
-          <span
-            style={{
-              color: "#333",
-            }}
-          >
-            {detail}
           </span>
         </div>
       </div>

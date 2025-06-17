@@ -23,6 +23,9 @@ export async function GET(request: NextRequest) {
         name: true,
         createdAt: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     return NextResponse.json({ admins });

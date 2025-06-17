@@ -83,13 +83,14 @@ export default function ViewPdf({ id }: { id: string }) {
           <PDFReceipt
             clientName={client.fullName}
             clientStreet={client.street || "Dirección no especificada"}
-            amount={payment.amount}
+            amount={payment.concepts.reduce((sum, c) => sum + c.amount, 0)}
             amountInWords={payment.amountText}
-            detail={payment.detail}
-            conceptType={payment.conceptType}
+            detail={payment.concepts.map(c => `${c.conceptType}: ${c.detail}`).join("\n")}
+            conceptType={payment.concepts.map(c => c.conceptType).join(", ")}
             paymentType={payment.paymentType}
             formattedDate={formattedDate}
             number={payment.number}
+            concepts={payment.concepts}
           />
         </PDFViewer>
       </div>

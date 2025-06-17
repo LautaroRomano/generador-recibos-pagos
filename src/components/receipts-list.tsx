@@ -6,9 +6,9 @@ import { clientApi } from "@/lib/api";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { Input } from "@/components/ui/input";
-import { Search, Printer } from "lucide-react";
+import { Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import PaymentModal from "./payment-modal";
 import ViewPdf from "./print/ViewPdf";
 
 export default function ReceiptsList() {
@@ -16,7 +16,9 @@ export default function ReceiptsList() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [clientSearch, setClientSearch] = useState<string>("");
+  const [paymentType, setPaymentType] = useState<string>("");
   const [printPdf, setPrintPdf] = useState<null | string>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -33,6 +35,18 @@ export default function ReceiptsList() {
 
   const handlePrint = (id: string) => {
     setPrintPdf(id);
+  };
+
+  const handleSavePayment = async (payment: Payment) => {
+    try {
+      const newPayment = await clientApi.createPayment(payment);
+      setReceipts((prev) => [...prev, newPayment]);
+      setIsPaymentModalOpen(false);
+      return newPayment;
+    } catch (error) {
+      console.error("Error saving payment:", error);
+      throw error;
+    }
   };
 
   const filteredReceipts = receipts.filter((receipt) => {
@@ -58,16 +72,22 @@ export default function ReceiptsList() {
       if (!clientName.includes(searchLower)) return false;
     }
 
+    // Filter by payment type
+    if (paymentType && receipt.paymentType !== paymentType) {
+      return false;
+    }
+
     return true;
   });
 
   const totalAmount = filteredReceipts.reduce(
-    (sum, receipt) => sum + receipt.amount,
+    (sum, receipt) =>
+      sum + receipt.concepts.reduce((sum, c) => sum + c.amount, 0),
     0
   );
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="space-y-4">
       <div
         className={`absolute top-0 left-0 w-full h-full bg-black/50 z-50 ${printPdf ? "block" : "hidden"}`}
       >
@@ -80,39 +100,57 @@ export default function ReceiptsList() {
           </div>
         </div>
       </div>
-      <div className="space-y-4 mb-6">
-        <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por cliente..."
-            value={clientSearch}
-            onChange={(e) => setClientSearch(e.target.value)}
-            className="pl-8"
-          />
-        </div>
 
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Fecha Inicial
-            </label>
-            <Input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Fecha Final
-            </label>
-            <Input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full"
-            />
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-4 border-b space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Fecha Inicial
+              </label>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Fecha Final
+              </label>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Cliente
+              </label>
+              <Input
+                placeholder="Buscar por nombre..."
+                value={clientSearch}
+                onChange={(e) => setClientSearch(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tipo de Pago
+              </label>
+              <select
+                value={paymentType}
+                onChange={(e) => setPaymentType(e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2"
+              >
+                <option value="">Todos</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -124,74 +162,92 @@ export default function ReceiptsList() {
             Total: ${totalAmount.toLocaleString()}
           </div>
         </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Cliente
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fecha
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Conceptos
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Monto
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tipo de Pago
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredReceipts.map((receipt) => (
+                <tr key={receipt.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {receipt.client?.fullName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {format(new Date(receipt.date), "PPP", { locale: es })}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      {receipt.concepts.map((concept) => (
+                        <div key={concept.id} className="text-sm">
+                          <span className="font-medium">
+                            {concept.conceptType}:
+                          </span>{" "}
+                          ${concept.amount.toLocaleString()}
+                          {concept.detail && (
+                            <span className="text-gray-500 ml-2">
+                              ({concept.detail})
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    $
+                    {receipt.concepts
+                      .reduce((sum, c) => sum + c.amount, 0)
+                      .toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {receipt.paymentType}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1"
+                      onClick={() => handlePrint(receipt.id)}
+                    >
+                      <Printer className="h-4 w-4" />
+                      <span className="sr-only md:not-sr-only md:inline-block">
+                        Imprimir
+                      </span>
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Cliente
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fecha
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Monto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Concepto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tipo de Pago
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Detalle
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredReceipts.map((receipt) => (
-              <tr key={receipt.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {receipt.client?.fullName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {format(new Date(receipt.date), "PPP", { locale: es })}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  ${receipt.amount.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {receipt.conceptType}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {receipt.paymentType}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {receipt.detail}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-1"
-                    onClick={() => handlePrint(receipt.id)}
-                  >
-                    <Printer className="h-4 w-4" />
-                    <span className="sr-only md:not-sr-only md:inline-block">
-                      Imprimir
-                    </span>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSavePayment={handleSavePayment}
+        client={null}
+      />
     </div>
   );
 }

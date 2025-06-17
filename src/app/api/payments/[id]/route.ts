@@ -19,7 +19,7 @@ export async function GET(
     // Buscar el pago por ID
     const payment = await prisma.payment.findUnique({
       where: { id },
-      include: { client: true }, // Incluir los datos del cliente
+      include: { client: true, concepts: true }, // Incluir los datos del cliente
     });
 
     // Verificar si el pago existe
