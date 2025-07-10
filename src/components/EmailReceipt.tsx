@@ -3,6 +3,8 @@ import React from "react";
 interface EmailReceiptProps {
   clientName: string;
   clientStreet: string;
+  clientLote?: string;
+  clientPhone?: string;
   amount: number;
   amountInWords: string;
   detail: string;
@@ -20,6 +22,8 @@ interface EmailReceiptProps {
 export const EmailReceipt = ({
   clientName,
   clientStreet,
+  clientLote,
+  clientPhone,
   amount,
   amountInWords,
   detail,
@@ -27,7 +31,7 @@ export const EmailReceipt = ({
   paymentType,
   formattedDate,
   number,
-  concepts
+  concepts,
 }: EmailReceiptProps) => {
   // Formatear el monto para mostrar
   const formattedAmount = new Intl.NumberFormat("es-ES", {
@@ -68,13 +72,13 @@ export const EmailReceipt = ({
           }}
         >
           <img
-            src="https://generador-recibos-pagos.vercel.app/logo.jpg" 
+            src="https://generador-recibos-pagos.vercel.app/logo.jpg"
             alt="Logo"
             style={{
               width: "100px",
               height: "100px",
               display: "block",
-              margin: "0 auto"
+              margin: "0 auto",
             }}
           />
         </div>
@@ -120,6 +124,14 @@ export const EmailReceipt = ({
         >
           IVA EXENTO
         </p>
+        <p
+          style={{
+            margin: "5px 0",
+            color: "#555",
+          }}
+        >
+          C.U.I.T.: 30-71480079-1
+        </p>
       </div>
 
       <div
@@ -147,7 +159,11 @@ export const EmailReceipt = ({
           >
             RECIBO N°:
           </strong>{" "}
-          0001-{Array.from({length: 6-number.toString().length},()=>"0").join("")}{number}
+          0001-
+          {Array.from({ length: 6 - number.toString().length }, () => "0").join(
+            ""
+          )}
+          {number}
         </div>
         <div
           style={{
@@ -176,56 +192,68 @@ export const EmailReceipt = ({
       >
         <div
           style={{
-            marginBottom: "8px",
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)", // 2 columnas de ancho flexible
+            gap: "8px 16px", // 8 px entre filas, 16 px entre columnas
+            alignItems: "baseline", // alinea las etiquetas y valores
           }}
         >
-          <strong
-            style={{
-              color: "#333",
-              display: "inline-block",
-              width: "100px",
-            }}
-          >
-            Señor:
-          </strong>
-          <span
-            style={{
-              color: "#333",
-            }}
-          >
-            {clientName}
-          </span>
-        </div>
-        <div
-          style={{
-            marginBottom: "8px",
-          }}
-        >
-          <strong
-            style={{
-              color: "#333",
-              display: "inline-block",
-              width: "100px",
-            }}
-          >
-            Domicilio:
-          </strong>
-          <span
-            style={{
-              color: "#333",
-            }}
-          >
-            {clientStreet}
-          </span>
+          <div>
+            <strong
+              style={{ color: "#333", width: 100, display: "inline-block" }}
+            >
+              Señor:
+            </strong>
+            <span style={{ color: "#333" }}>{clientName}</span>
+          </div>
+
+          <div>
+            <strong
+              style={{ color: "#333", width: 100, display: "inline-block" }}
+            >
+              Domicilio:
+            </strong>
+            <span style={{ color: "#333" }}>{clientStreet}</span>
+          </div>
+
+          {clientLote && (
+            <div>
+              <strong
+                style={{ color: "#333", width: 100, display: "inline-block" }}
+              >
+                Lote:
+              </strong>
+              <span style={{ color: "#333" }}>{clientLote}</span>
+            </div>
+          )}
+
+          {clientPhone && (
+            <div>
+              <strong
+                style={{ color: "#333", width: 100, display: "inline-block" }}
+              >
+                Teléfono:
+              </strong>
+              <span style={{ color: "#333" }}>{clientPhone}</span>
+            </div>
+          )}
         </div>
 
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #ddd" }}>
-                <th style={{ textAlign: "left", padding: "8px", width: "40%" }}>Concepto</th>
-                <th style={{ textAlign: "right", padding: "8px", width: "30%" }}>Monto</th>
-                <th style={{ textAlign: "left", padding: "8px", width: "30%" }}>Detalle</th>
+                <th style={{ textAlign: "left", padding: "8px", width: "40%" }}>
+                  Concepto
+                </th>
+                <th
+                  style={{ textAlign: "right", padding: "8px", width: "30%" }}
+                >
+                  Monto
+                </th>
+                <th style={{ textAlign: "left", padding: "8px", width: "30%" }}>
+                  Detalle
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -242,10 +270,23 @@ export const EmailReceipt = ({
                 </tr>
               ))}
               <tr>
-                <td colSpan={2} style={{ textAlign: "right", padding: "8px", fontWeight: "bold" }}>
+                <td
+                  colSpan={2}
+                  style={{
+                    textAlign: "right",
+                    padding: "8px",
+                    fontWeight: "bold",
+                  }}
+                >
                   Total:
                 </td>
-                <td style={{ textAlign: "right", padding: "8px", fontWeight: "bold" }}>
+                <td
+                  style={{
+                    textAlign: "right",
+                    padding: "8px",
+                    fontWeight: "bold",
+                  }}
+                >
                   {formattedAmount}
                 </td>
               </tr>

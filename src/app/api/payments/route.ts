@@ -69,6 +69,8 @@ export async function POST(request: Request) {
     // Ensure client data exists and use defaults if not
     const clientName = client.fullName || "Cliente";
     const clientStreet = client.street || "Dirección no especificada";
+    const clientLote = client.lote || undefined;
+    const clientPhone = client.phone || undefined;
 
     // Send email receipt
     await resend.emails.send({
@@ -78,6 +80,8 @@ export async function POST(request: Request) {
       react: EmailReceipt({
         clientName,
         clientStreet,
+        clientLote,
+        clientPhone,
         amount: totalAmount,
         amountInWords: numberToText(totalAmount),
         detail: concepts.map(c => `${c.conceptType}: ${c.detail}`).join("\n"),

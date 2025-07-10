@@ -12,6 +12,8 @@ import {
 interface PDFReceiptProps {
   clientName: string;
   clientStreet: string;
+  clientLote?: string;
+  clientPhone?: string;
   amount: number;
   amountInWords: string;
   detail: string;
@@ -38,14 +40,19 @@ Font.register({
 // Crear estilos
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
-    // fontFamily: 'Roboto',
+    padding: 15,
     backgroundColor: "white",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  receiptContainer: {
+    width: "48%",
+    padding: 15,
   },
   header: {
     textAlign: "center",
-    marginBottom: 20,
-    paddingBottom: 20,
+    marginBottom: 15,
+    paddingBottom: 15,
     borderBottom: "2px solid #0056b3",
   },
   logoContainer: {
@@ -53,34 +60,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
   },
   title: {
     color: "#0056b3",
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 14,
   },
   subtitle: {
     color: "#0056b3",
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: "normal",
   },
   address: {
-    marginTop: 5,
+    marginTop: 3,
     color: "#555",
-    fontSize: 12,
+    fontSize: 9,
   },
   receiptInfo: {
     flexDirection: "row",
     backgroundColor: "#f8f9fa",
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 20,
-    fontSize: 14,
+    padding: 8,
+    borderRadius: 4,
+    marginBottom: 15,
+    fontSize: 10,
     justifyContent: "space-between",
   },
   receiptInfoLeft: {
@@ -97,33 +104,39 @@ const styles = StyleSheet.create({
   },
   clientInfo: {
     backgroundColor: "#f8f9fa",
-    padding: 20,
-    borderRadius: 6,
-    marginBottom: 20,
+    padding: 12,
+    borderRadius: 4,
+    marginBottom: 15,
+  },
+  clientRowContainer: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 8,
   },
   clientRow: {
     flexDirection: "row",
-    marginBottom: 8,
-    fontSize: 14,
+    marginBottom: 6,
+    fontSize: 10,
   },
   clientLabel: {
     color: "#333",
     fontWeight: "bold",
-    width: 100,
+    width: 60,
   },
   clientText: {
     color: "#333",
+    width: 120,
   },
   amountRow: {
     flexDirection: "row",
-    marginTop: 15,
-    marginBottom: 8,
-    fontSize: 14,
+    marginTop: 10,
+    marginBottom: 6,
+    fontSize: 10,
   },
   amountLabel: {
     color: "#333",
     fontWeight: "bold",
-    width: 130,
+    width: 80,
   },
   amountText: {
     color: "#0056b3",
@@ -132,42 +145,42 @@ const styles = StyleSheet.create({
   amountValue: {
     color: "#0056b3",
     fontWeight: "bold",
-    marginLeft: 10,
+    marginLeft: 8,
   },
   conceptRow: {
     flexDirection: "row",
-    marginBottom: 8,
-    fontSize: 14,
+    marginBottom: 6,
+    fontSize: 10,
   },
   conceptLabel: {
     color: "#333",
     fontWeight: "bold",
-    width: 130,
+    width: 80,
   },
   conceptText: {
     color: "#333",
   },
   paymentRow: {
     flexDirection: "row",
-    marginTop: 15,
-    fontSize: 14,
+    marginTop: 10,
+    fontSize: 10,
   },
   detailRow: {
     flexDirection: "row",
-    marginTop: 15,
-    fontSize: 14,
+    marginTop: 10,
+    fontSize: 10,
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 30,
-    paddingTop: 20,
+    marginTop: 20,
+    paddingTop: 15,
     borderTop: "1px solid #ddd",
   },
   footerLeft: {
     width: "50%",
     textAlign: "left",
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: "bold",
   },
   footerRight: {
@@ -176,73 +189,76 @@ const styles = StyleSheet.create({
   },
   signature: {
     borderTop: "1px solid #333",
-    width: 150,
-    marginLeft: "55px",
+    width: 100,
+    marginLeft: "auto",
   },
   signatureText: {
-    marginTop: 8,
+    marginTop: 6,
     color: "#555",
-    fontSize: 12,
+    fontSize: 9,
     textAlign: "center",
   },
   disclaimer: {
-    marginTop: 40,
-    fontSize: 12,
+    marginTop: 25,
+    fontSize: 9,
     textAlign: "center",
     color: "#777",
     fontStyle: "italic",
   },
   conceptsTable: {
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 15,
+    marginBottom: 15,
   },
   conceptsHeader: {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
-    paddingBottom: 5,
-    marginBottom: 5,
+    paddingBottom: 3,
+    marginBottom: 3,
   },
   conceptsRow: {
     flexDirection: "row",
-    marginBottom: 5,
+    marginBottom: 3,
   },
   conceptType: {
     width: "40%",
-    fontSize: 14,
+    fontSize: 9,
   },
   conceptAmount: {
     width: "30%",
-    fontSize: 14,
+    fontSize: 9,
     textAlign: "right",
   },
   conceptDetail: {
     width: "30%",
-    fontSize: 12,
+    fontSize: 8,
     textAlign: "right",
   },
   totalRow: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    marginTop: 10,
-    paddingTop: 10,
+    marginTop: 8,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
   },
   totalLabel: {
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: "bold",
-    marginRight: 10,
+    marginRight: 8,
   },
   totalAmount: {
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: "bold",
   },
 });
 
-export const PDFReceipt = ({
+// Componente para un recibo individual
+const SingleReceipt = ({
   clientName,
   clientStreet,
+  clientLote,
+  clientPhone,
   amount,
   amountInWords,
   detail,
@@ -262,40 +278,41 @@ export const PDFReceipt = ({
   const printDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
 
   return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Image src="/logo.jpg" style={styles.logo} />
-          </View>
-          <Text style={styles.title}>CLUB NAUTICO Y PESCA</Text>
-          <Text style={styles.subtitle}>Sociedad Civil</Text>
-          <Text style={styles.address}>
-            AVENIDA EL LIBANO 1757 - SAN MIGUEL DE TUCUMÁN - IVA EXENTO
+    <View style={styles.receiptContainer}>
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <Image src="/logo.jpg" style={styles.logo} />
+        </View>
+        <Text style={styles.title}>CLUB NAUTICO Y PESCA</Text>
+        <Text style={styles.subtitle}>Sociedad Civil</Text>
+        <Text style={styles.address}>
+          AVENIDA EL LIBANO 1757 - SAN MIGUEL DE TUCUMÁN - IVA EXENTO
+        </Text>
+        <Text style={styles.address}>C.U.I.T.: 30-71480079-1</Text>
+      </View>
+
+      <View style={styles.receiptInfo}>
+        <View style={styles.receiptInfoLeft}>
+          <Text>
+            <Text style={styles.receiptInfoLabel}>RECIBO N°: </Text>
+            0001-
+            {Array.from(
+              { length: 6 - number.toString().length },
+              () => "0"
+            ).join("")}
+            {number}
           </Text>
         </View>
-
-        <View style={styles.receiptInfo}>
-          <View style={styles.receiptInfoLeft}>
-            <Text>
-              <Text style={styles.receiptInfoLabel}>RECIBO N°: </Text>
-              0001-
-              {Array.from(
-                { length: 6 - number.toString().length },
-                () => "0"
-              ).join("")}
-              {number}
-            </Text>
-          </View>
-          <View style={styles.receiptInfoRight}>
-            <Text>
-              <Text style={styles.receiptInfoLabel}>FECHA: </Text>
-              {formattedDate}
-            </Text>
-          </View>
+        <View style={styles.receiptInfoRight}>
+          <Text>
+            <Text style={styles.receiptInfoLabel}>FECHA: </Text>
+            {formattedDate}
+          </Text>
         </View>
+      </View>
 
-        <View style={styles.clientInfo}>
+      <View style={styles.clientInfo}>
+        <View style={styles.clientRowContainer}>
           <View style={styles.clientRow}>
             <Text style={styles.clientLabel}>Señor:</Text>
             <Text style={styles.clientText}>{clientName}</Text>
@@ -304,56 +321,120 @@ export const PDFReceipt = ({
             <Text style={styles.clientLabel}>Domicilio:</Text>
             <Text style={styles.clientText}>{clientStreet}</Text>
           </View>
-
-          <View style={styles.conceptsTable}>
-            <View style={styles.conceptsHeader}>
-              <Text style={styles.conceptType}>Concepto</Text>
-              <Text style={styles.conceptAmount}>Monto</Text>
-              <Text style={styles.conceptDetail}>Detalle</Text>
+        </View>
+        <View style={styles.clientRowContainer}>
+          {clientLote && (
+            <View style={styles.clientRow}>
+              <Text style={styles.clientLabel}>Lote:</Text>
+              <Text style={styles.clientText}>{clientLote}</Text>
             </View>
-            {concepts.map((concept, index) => (
-              <View key={index} style={styles.conceptsRow}>
-                <Text style={styles.conceptType}>{concept.conceptType}</Text>
-                <Text style={styles.conceptAmount}>
-                  {new Intl.NumberFormat("es-ES", {
-                    style: "currency",
-                    currency: "ARS",
-                  }).format(concept.amount)}
-                </Text>
-                <Text style={styles.conceptDetail}>{concept.detail}</Text>
-              </View>
-            ))}
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total:</Text>
-              <Text style={styles.totalAmount}>{formattedAmount}</Text>
+          )}
+          {clientPhone && (
+            <View style={styles.clientRow}>
+              <Text style={styles.clientLabel}>Teléfono:</Text>
+              <Text style={styles.clientText}>{clientPhone}</Text>
             </View>
-          </View>
+          )}
+        </View>
 
-          <View style={styles.amountRow}>
-            <Text style={styles.amountLabel}>Recibí la suma de:</Text>
-            <Text style={styles.amountText}>{amountInWords}</Text>
-            <Text style={styles.amountValue}>({formattedAmount})</Text>
+        <View style={styles.conceptsTable}>
+          <View style={styles.conceptsHeader}>
+            <Text style={styles.conceptType}>Concepto</Text>
+            <Text style={styles.conceptAmount}>Monto</Text>
+            <Text style={styles.conceptDetail}>Detalle</Text>
           </View>
-
-          <View style={styles.paymentRow}>
-            <Text style={styles.conceptLabel}>Forma de pago:</Text>
-            <Text style={styles.conceptText}>{paymentType}</Text>
+          {concepts.map((concept, index) => (
+            <View key={index} style={styles.conceptsRow}>
+              <Text style={styles.conceptType}>{concept.conceptType}</Text>
+              <Text style={styles.conceptAmount}>
+                {new Intl.NumberFormat("es-ES", {
+                  style: "currency",
+                  currency: "ARS",
+                }).format(concept.amount)}
+              </Text>
+              <Text style={styles.conceptDetail}>{concept.detail}</Text>
+            </View>
+          ))}
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalAmount}>{formattedAmount}</Text>
           </View>
         </View>
 
-        <View style={styles.footer}>
-          <View style={styles.footerLeft}>
-            <Text>{formattedAmount}</Text>
-          </View>
-          <View style={styles.footerRight}>
-            <View style={styles.signature} />
-            <Text style={styles.signatureText}>Firma y Aclaración</Text>
-          </View>
+        <View style={styles.amountRow}>
+          <Text style={styles.amountLabel}>Recibí la suma de:</Text>
+          <Text style={styles.amountText}>{amountInWords}</Text>
+          <Text style={styles.amountValue}>({formattedAmount})</Text>
         </View>
 
-        <Text style={styles.disclaimer}>
-          Documento no válido como factura - Impresión: {printDate}
-        </Text>
+        <View style={styles.paymentRow}>
+          <Text style={styles.conceptLabel}>Forma de pago:</Text>
+          <Text style={styles.conceptText}>{paymentType}</Text>
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <View style={styles.footerLeft}>
+          <Text>{formattedAmount}</Text>
+        </View>
+        <View style={styles.footerRight}>
+          <View style={styles.signature} />
+          <Text style={styles.signatureText}>Firma y Aclaración</Text>
+        </View>
+      </View>
+
+      <Text style={styles.disclaimer}>
+        Documento no válido como factura - Impresión: {printDate}
+      </Text>
+    </View>
+  );
+};
+
+export const PDFReceipt = ({
+  clientName,
+  clientStreet,
+  clientLote,
+  clientPhone,
+  amount,
+  amountInWords,
+  detail,
+  conceptType,
+  paymentType,
+  formattedDate,
+  number,
+  concepts,
+}: PDFReceiptProps) => {
+  return (
+    <Document>
+      <Page size="A4" orientation="landscape" style={styles.page}>
+        <SingleReceipt
+          clientName={clientName}
+          clientStreet={clientStreet}
+          clientLote={clientLote}
+          clientPhone={clientPhone}
+          amount={amount}
+          amountInWords={amountInWords}
+          detail={detail}
+          conceptType={conceptType}
+          paymentType={paymentType}
+          formattedDate={formattedDate}
+          number={number}
+          concepts={concepts}
+        />
+        <SingleReceipt
+          clientName={clientName}
+          clientStreet={clientStreet}
+          clientLote={clientLote}
+          clientPhone={clientPhone}
+          amount={amount}
+          amountInWords={amountInWords}
+          detail={detail}
+          conceptType={conceptType}
+          paymentType={paymentType}
+          formattedDate={formattedDate}
+          number={number}
+          concepts={concepts}
+        />
       </Page>
     </Document>
   );

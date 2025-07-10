@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyPassword } from '@/lib/auth';
+import { hashPassword, verifyPassword } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
@@ -22,10 +22,20 @@ export async function POST(request: NextRequest) {
 
     if (!admin) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Admin not found' },
         { status: 401 }
       );
     }
+
+    if(admin?.password === 'RESET') {
+      await prisma.admin.update({
+        where: { id: admin.id },
+        data: {
+          password: hashPassword(password),
+        },
+      });
+    }else{
+
 
     // Verify password
     const isPasswordValid = verifyPassword(password, admin.password);
@@ -36,6 +46,8 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+  }
+
 
     // Create a session token
     const sessionToken = uuidv4();
