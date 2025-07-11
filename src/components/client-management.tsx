@@ -33,10 +33,16 @@ export default function ClientManagement() {
       const newClient = await clientApi.create(client);
       setClients([...clients, newClient]);
       toast.success(`${client.fullName} ha sido agregado correctamente.`);
-    } catch (error) {
-      toast.error(
-        "Error al agregar el cliente. Por favor, intente nuevamente."
-      );
+    } catch (error: any) {
+      // Manejar específicamente el error de email duplicado
+      if (error.response?.status === 409) {
+        toast.error("Ya existe un cliente con este email. Por favor, use un email diferente.");
+      } else {
+        toast.error(
+          error.response?.data?.error || error.message || 
+          "Error al agregar el cliente. Por favor, intente nuevamente."
+        );
+      }
       console.error("Error creating client:", error);
     }
   };
@@ -50,10 +56,16 @@ export default function ClientManagement() {
       setClients(clients.map(c => c.id === selectedClient.id ? updatedClient : c));
       setIsEditModalOpen(false);
       toast.success(`${client.fullName} ha sido actualizado correctamente.`);
-    } catch (error) {
-      toast.error(
-        "Error al actualizar el cliente. Por favor, intente nuevamente."
-      );
+    } catch (error: any) {
+      // Manejar específicamente el error de email duplicado
+      if (error.response?.status === 409) {
+        toast.error("Ya existe un cliente con este email. Por favor, use un email diferente.");
+      } else {
+        toast.error(
+          error.response?.data?.error || error.message || 
+          "Error al actualizar el cliente. Por favor, intente nuevamente."
+        );
+      }
       console.error("Error updating client:", error);
     }
   };

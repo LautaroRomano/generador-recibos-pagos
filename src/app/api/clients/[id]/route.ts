@@ -58,9 +58,9 @@ export async function PUT(
     }
 
     // Validar campos requeridos
-    if (!fullName || !email) {
+    if (!fullName) {
       return NextResponse.json(
-        { error: "Nombre y email son requeridos" },
+        { error: "Nombre es requerido" },
         { status: 400 }
       );
     }

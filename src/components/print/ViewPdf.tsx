@@ -31,7 +31,10 @@ export default function ViewPdf({ id }: { id: string }) {
         setLoading(false);
       } catch (err) {
         console.error("Error al cargar el recibo:", err);
-        setError("No se pudo cargar el recibo. Por favor, intente nuevamente.");
+        setError(
+          err instanceof Error ? err.message : 
+          "No se pudo cargar el recibo. Por favor, intente nuevamente."
+        );
         setLoading(false);
       }
     };

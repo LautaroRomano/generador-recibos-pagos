@@ -12,7 +12,14 @@ export async function POST(request: Request) {
     const { clientId, date, concepts, paymentType } = body;
 
     // Validate required fields
-    if (!clientId || !date || !concepts || !paymentType || !Array.isArray(concepts) || concepts.length === 0) {
+    if (
+      !clientId ||
+      !date ||
+      !concepts ||
+      !paymentType ||
+      !Array.isArray(concepts) ||
+      concepts.length === 0
+    ) {
       return NextResponse.json(
         { error: "Todos los campos son requeridos" },
         { status: 400 }
@@ -36,7 +43,10 @@ export async function POST(request: Request) {
     const countPayments = await prisma.payment.count();
 
     // Calcular el monto total
-    const totalAmount = concepts.reduce((sum, concept) => sum + concept.amount, 0);
+    const totalAmount = concepts.reduce(
+      (sum, concept) => sum + concept.amount,
+      0
+    );
 
     // Create payment with concepts
     const newPayment = await prisma.payment.create({
@@ -47,16 +57,16 @@ export async function POST(request: Request) {
         amountText: numberToText(totalAmount),
         number: countPayments + 1,
         concepts: {
-          create: concepts.map(concept => ({
+          create: concepts.map((concept) => ({
             conceptType: concept.conceptType,
             amount: concept.amount,
-            detail: concept.detail
-          }))
-        }
+            detail: concept.detail,
+          })),
+        },
       },
       include: {
-        concepts: true
-      }
+        concepts: true,
+      },
     });
 
     // Format date for email
@@ -72,26 +82,30 @@ export async function POST(request: Request) {
     const clientLote = client.lote || undefined;
     const clientPhone = client.phone || undefined;
 
-    // Send email receipt
-    await resend.emails.send({
-      from: "Club Nautico y Pesca <noreply@digicom.net.ar>",
-      to: client.email || "",
-      subject: "Recibo de Pago - Club Nautico y Pesca",
-      react: EmailReceipt({
-        clientName,
-        clientStreet,
-        clientLote,
-        clientPhone,
-        amount: totalAmount,
-        amountInWords: numberToText(totalAmount),
-        detail: concepts.map(c => `${c.conceptType}: ${c.detail}`).join("\n"),
-        conceptType: concepts.map(c => c.conceptType).join(", "),
-        paymentType,
-        formattedDate,
-        number: newPayment.number || 0,
-        concepts: concepts
-      }),
-    });
+    if (!!client.email) {
+      // Send email receipt
+      await resend.emails.send({
+        from: "Club Nautico y Pesca <noreply@digicom.net.ar>",
+        to: client.email,
+        subject: "Recibo de Pago - Club Nautico y Pesca",
+        react: EmailReceipt({
+          clientName,
+          clientStreet,
+          clientLote,
+          clientPhone,
+          amount: totalAmount,
+          amountInWords: numberToText(totalAmount),
+          detail: concepts
+            .map((c) => `${c.conceptType}: ${c.detail}`)
+            .join("\n"),
+          conceptType: concepts.map((c) => c.conceptType).join(", "),
+          paymentType,
+          formattedDate,
+          number: newPayment.number || 0,
+          concepts: concepts,
+        }),
+      });
+    }
 
     return NextResponse.json(newPayment, { status: 201 });
   } catch (error) {

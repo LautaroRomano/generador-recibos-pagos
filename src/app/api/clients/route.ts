@@ -26,8 +26,11 @@ export async function POST(request: Request) {
     }
 
     // Check if email already exists
-    const clients = await prisma.client.findMany(); 
-    if (clients.some((client: any) => client.email === email)) {
+    const existingClient = await prisma.client.findUnique({
+      where: { email }
+    });
+    
+    if (existingClient) {
       return NextResponse.json(
         { error: "El email ya está registrado" },
         { status: 409 }
