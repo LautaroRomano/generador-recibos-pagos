@@ -33,7 +33,7 @@ export default function ClientTable({
     const searchLower = searchQuery.toLowerCase();
     return (
       client.fullName.toLowerCase().includes(searchLower) ||
-      client.email.toLowerCase().includes(searchLower) ||
+      (client.email?.toLowerCase().includes(searchLower) ?? false) ||
       (client.lote?.toLowerCase().includes(searchLower) ?? false)
     );
   });
