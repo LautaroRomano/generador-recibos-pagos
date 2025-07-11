@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { Client } from "@/types";
 
 import { prisma } from "@/lib/prisma";
 
@@ -9,38 +8,17 @@ export async function POST(request: Request) {
     const { fullName, email, street, lote, phone } = body;
 
     // Validate required fields
-    if (!fullName || !email) {
+    if (!fullName) {
       return NextResponse.json(
-        { error: "Nombre completo y email son requeridos" },
+        { error: "Nombre completo es requerido" },
         { status: 400 }
-      );
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Formato de email inválido" },
-        { status: 400 }
-      );
-    }
-
-    // Check if email already exists
-    const existingClient = await prisma.client.findUnique({
-      where: { email }
-    });
-    
-    if (existingClient) {
-      return NextResponse.json(
-        { error: "El email ya está registrado" },
-        { status: 409 }
       );
     }
 
     const newClient = await prisma.client.create({
       data: {
         fullName,
-        email,
+        email: email || null,
         street,
         lote,
         phone,
