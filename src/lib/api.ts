@@ -12,7 +12,7 @@ const api = axios.create({
 // Types
 export type CreateClientDTO = {
   fullName: string;
-  email: string;
+  email?: string | null;
   street?: string;
   lote?: string;
   phone?: string;

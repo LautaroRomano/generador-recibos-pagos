@@ -1,7 +1,7 @@
 export type Client = {
   id: string;
   fullName: string;
-  email: string;
+  email?: string | null;
   street?: string;
   lote?: string;
   phone?: string;
