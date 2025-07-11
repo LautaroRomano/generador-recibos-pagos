@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if(admin?.password === 'RESET') {
+    if(admin.password === 'RESET') {
       await prisma.admin.update({
         where: { id: admin.id },
         data: {
@@ -35,8 +35,6 @@ export async function POST(request: NextRequest) {
         },
       });
     }else{
-
-
     // Verify password
     const isPasswordValid = verifyPassword(password, admin.password);
 

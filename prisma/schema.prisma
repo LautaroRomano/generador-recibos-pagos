@@ -52,8 +52,8 @@ model PaymentConcept {
 
 model Admin {
   id        String   @id @default(uuid())
-  email     String   
-  password  String
+  email     String   @unique
+  password  String   @default("RESET")
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
