@@ -70,7 +70,7 @@ export async function PUT(
       where: { id },
       data: {
         fullName,
-        email,
+        email: !!email && email.length > 0 ? email : null,
         street,
         lote,
         phone,

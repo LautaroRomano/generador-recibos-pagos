@@ -121,7 +121,7 @@ export async function POST(request: Request) {
 export async function GET() {
   const payments = await prisma.payment.findMany({
     include: { client: true, concepts: true },
-    orderBy: { date: "desc" },
+    orderBy: { createdAt: "desc" },
   });
   return NextResponse.json(payments);
 }
