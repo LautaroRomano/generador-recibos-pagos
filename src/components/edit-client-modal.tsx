@@ -24,10 +24,10 @@ import { Client } from "@/types";
 
 const clientSchema = z.object({
   fullName: z.string().min(3, { message: "El nombre debe tener al menos 3 caracteres" }),
-  email: z.string().optional(),
-  street: z.string().optional(),
-  lote: z.string().optional(),
-  phone: z.string().optional(),
+  email: z.string().nullable().optional().or(z.literal("")),
+  street: z.string().nullable().optional().or(z.literal("")),
+  lote: z.string().nullable().optional().or(z.literal("")),
+  phone: z.string().nullable().optional().or(z.literal("")),
 });
 
 type ClientFormValues = z.infer<typeof clientSchema>;
@@ -104,7 +104,7 @@ export default function EditClientModal({
                   <FormItem>
                     <FormLabel>Correo electrónico</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="correo@ejemplo.com" {...field} />
+                      <Input type="email" placeholder="correo@ejemplo.com" {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -118,7 +118,7 @@ export default function EditClientModal({
                   <FormItem>
                     <FormLabel>Calle</FormLabel>
                     <FormControl>
-                      <Input placeholder="Calle" {...field} />
+                      <Input placeholder="Calle" {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -132,7 +132,7 @@ export default function EditClientModal({
                   <FormItem>
                     <FormLabel>Lote</FormLabel>
                     <FormControl>
-                      <Input placeholder="Lote" {...field} />
+                      <Input placeholder="Lote" {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -146,7 +146,7 @@ export default function EditClientModal({
                   <FormItem>
                     <FormLabel>Teléfono</FormLabel>
                     <FormControl>
-                      <Input placeholder="Teléfono" {...field} />
+                      <Input placeholder="Teléfono" {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
