@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   conceptType: {
-    width: "30%",
+    width: "20%",
     fontSize: 9,
   },
   conceptAmount: {
@@ -230,9 +230,10 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   conceptDetail: {
-    width: "50%",
+    width: "60%",
     fontSize: 8,
     textAlign: "left",
+    marginLeft: 8,
   },
   totalRow: {
     flexDirection: "row",
