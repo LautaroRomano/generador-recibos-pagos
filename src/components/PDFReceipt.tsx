@@ -221,18 +221,18 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   conceptType: {
-    width: "40%",
+    width: "30%",
     fontSize: 9,
   },
   conceptAmount: {
-    width: "30%",
+    width: "20%",
     fontSize: 9,
     textAlign: "right",
   },
   conceptDetail: {
-    width: "30%",
+    width: "50%",
     fontSize: 8,
-    textAlign: "right",
+    textAlign: "left",
   },
   totalRow: {
     flexDirection: "row",

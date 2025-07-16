@@ -35,7 +35,7 @@ type ClientFormValues = z.infer<typeof clientSchema>;
 interface EditClientModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (client: ClientFormValues) => void;
+  onSave: (client: Omit<Client, "id">) => void;
   client: Client | null;
 }
 
@@ -69,7 +69,15 @@ export default function EditClientModal({
   }, [client, form]);
 
   const onSubmit = (data: ClientFormValues) => {
-    onSave(data);
+    // Transformar null y strings vacías a undefined para compatibilidad con el tipo Client
+    const transformedData = {
+      fullName: data.fullName,
+      email: data.email && data.email.trim() !== "" ? data.email : undefined,
+      street: data.street && data.street.trim() !== "" ? data.street : undefined,
+      lote: data.lote && data.lote.trim() !== "" ? data.lote : undefined,
+      phone: data.phone && data.phone.trim() !== "" ? data.phone : undefined,
+    };
+    onSave(transformedData);
     form.reset();
   };
 

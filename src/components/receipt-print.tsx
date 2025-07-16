@@ -66,8 +66,9 @@ export default function ReceiptPrint({ payment, client }: ReceiptPrintProps) {
             </div>
           </div>
 
-          <div className="mt-4">
-            <p><span className="font-semibold">Detalle:</span> {payment.detail}</p>
+          <div className="mt-6 p-3 bg-gray-50 rounded border">
+            <p className="font-semibold text-base mb-2">Detalle:</p>
+            <p className="text-sm leading-relaxed min-h-[3rem]">{payment.detail}</p>
           </div>
 
           <div className="mt-4 flex justify-between items-center">

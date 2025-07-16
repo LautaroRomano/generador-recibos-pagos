@@ -243,15 +243,15 @@ export const EmailReceipt = ({
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #ddd" }}>
-                <th style={{ textAlign: "left", padding: "8px", width: "40%" }}>
+                <th style={{ textAlign: "left", padding: "8px", width: "30%" }}>
                   Concepto
                 </th>
                 <th
-                  style={{ textAlign: "right", padding: "8px", width: "30%" }}
+                  style={{ textAlign: "right", padding: "8px", width: "20%" }}
                 >
                   Monto
                 </th>
-                <th style={{ textAlign: "left", padding: "8px", width: "30%" }}>
+                <th style={{ textAlign: "left", padding: "8px", width: "50%" }}>
                   Detalle
                 </th>
               </tr>
