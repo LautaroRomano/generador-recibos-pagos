@@ -24,7 +24,7 @@ import { Client } from "@/types";
 
 const clientSchema = z.object({
   fullName: z.string().min(3, { message: "El nombre debe tener al menos 3 caracteres" }),
-  email: z.string().email({ message: "Correo electrónico inválido" }),
+  email: z.string().optional(),
   street: z.string().optional(),
   lote: z.string().optional(),
   phone: z.string().optional(),
