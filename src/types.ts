@@ -27,3 +27,15 @@ export type Payment = {
     detail: string;
   }>;
 };
+
+export type Expense = {
+  id: string;
+  description: string;
+  amount: number;
+  category: string;
+  date: string;
+  receiptUrl?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};

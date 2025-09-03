@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Receipt, Users, LogOut } from "lucide-react";
+import { Home, Receipt, Users, LogOut, DollarSign, BarChart3 } from "lucide-react";
 import { logoutAdmin } from "@/lib/client-auth";
 
 export default function Sidebar() {
@@ -43,6 +43,28 @@ export default function Sidebar() {
         >
           <Receipt className="w-5 h-5 mr-3" />
           <span>Recibos</span>
+        </Link>
+        <Link
+          href="/admin/gastos"
+          className={`flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 ${
+            isActive("/admin/gastos")
+              ? "bg-gray-100 border-r-4 border-blue-500"
+              : ""
+          }`}
+        >
+          <DollarSign className="w-5 h-5 mr-3" />
+          <span>Gastos</span>
+        </Link>
+        <Link
+          href="/admin/balance"
+          className={`flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 ${
+            isActive("/admin/balance")
+              ? "bg-gray-100 border-r-4 border-blue-500"
+              : ""
+          }`}
+        >
+          <BarChart3 className="w-5 h-5 mr-3" />
+          <span>Balance</span>
         </Link>
         <Link
           href="/admin/users"
