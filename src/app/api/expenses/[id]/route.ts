@@ -6,9 +6,10 @@ const prisma = new PrismaClient();
 // PUT /api/expenses/[id] - Actualizar un gasto
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { description, amount, category, date, receiptUrl, notes } = body;
 
@@ -20,7 +21,7 @@ export async function PUT(
     }
 
     const expense = await prisma.expense.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         description,
         amount: parseFloat(amount),
@@ -44,11 +45,12 @@ export async function PUT(
 // DELETE /api/expenses/[id] - Eliminar un gasto
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.expense.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Gasto eliminado correctamente" });
