@@ -6,9 +6,10 @@ import { clientApi } from "@/lib/api";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { Input } from "@/components/ui/input";
-import { Printer } from "lucide-react";
+import { Printer, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PaymentModal from "./payment-modal";
+import EditPaymentModal from "./edit-payment-modal";
 import ViewPdf from "./print/ViewPdf";
 
 export default function ReceiptsList() {
@@ -19,6 +20,8 @@ export default function ReceiptsList() {
   const [paymentType, setPaymentType] = useState<string>("");
   const [printPdf, setPrintPdf] = useState<null | string>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
 
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -45,6 +48,28 @@ export default function ReceiptsList() {
       return newPayment;
     } catch (error) {
       console.error("Error saving payment:", error);
+      throw error;
+    }
+  };
+
+  const handleEditPayment = (payment: Payment) => {
+    setSelectedPayment(payment);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdatePayment = async (id: string, paymentData: any) => {
+    try {
+      const updatedPayment = await clientApi.updatePayment(id, paymentData);
+      setReceipts((prev) => 
+        prev.map((receipt) => 
+          receipt.id === id ? updatedPayment : receipt
+        )
+      );
+      setIsEditModalOpen(false);
+      setSelectedPayment(null);
+      return updatedPayment;
+    } catch (error) {
+      console.error("Error updating payment:", error);
       throw error;
     }
   };
@@ -223,17 +248,30 @@ export default function ReceiptsList() {
                     {receipt.paymentType}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-1"
-                      onClick={() => handlePrint(receipt.id)}
-                    >
-                      <Printer className="h-4 w-4" />
-                      <span className="sr-only md:not-sr-only md:inline-block">
-                        Imprimir
-                      </span>
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-1"
+                        onClick={() => handlePrint(receipt.id)}
+                      >
+                        <Printer className="h-4 w-4" />
+                        <span className="sr-only md:not-sr-only md:inline-block">
+                          Imprimir
+                        </span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-1"
+                        onClick={() => handleEditPayment(receipt)}
+                      >
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only md:not-sr-only md:inline-block">
+                          Editar
+                        </span>
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -247,6 +285,16 @@ export default function ReceiptsList() {
         onClose={() => setIsPaymentModalOpen(false)}
         onSavePayment={handleSavePayment}
         client={null}
+      />
+
+      <EditPaymentModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedPayment(null);
+        }}
+        onUpdatePayment={handleUpdatePayment}
+        payment={selectedPayment}
       />
     </div>
   );

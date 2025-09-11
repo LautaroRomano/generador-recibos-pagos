@@ -71,6 +71,10 @@ export const clientApi = {
     const response = await api.get<Payment[]>(`/payments/client/${clientId}`);
     return response.data;
   },
+  updatePayment: async (id: string, paymentData: CreatePaymentDTO): Promise<Payment> => {
+    const response = await api.put<Payment>(`/payments/${id}`, paymentData);
+    return response.data;
+  },
 };
 
 // Expense API endpoints
