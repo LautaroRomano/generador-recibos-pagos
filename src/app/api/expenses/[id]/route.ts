@@ -12,7 +12,7 @@ export async function GET(
     const { id } = await params;
     const expenses = await prisma.expense.findMany({
       orderBy: {
-        createdAt: "desc",
+        createdAt: "asc",
       },
     });
     const number = expenses.findIndex((expense) => expense.id === id) + 1;

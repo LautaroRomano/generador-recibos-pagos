@@ -1,15 +1,47 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loginAdmin } from "@/lib/client-auth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [shouldReload, setShouldReload] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+
+  // Efecto para manejar el reinicio automático de página
+  useEffect(() => {
+    if (shouldReload) {
+      // Pequeño delay para asegurar que la cookie se haya establecido
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
+  }, [shouldReload]);
+
+  // Verificar si el usuario ya está autenticado al cargar la página
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/admin/me');
+        if (response.ok) {
+          // Usuario ya autenticado, redirigir
+          const callbackUrl = searchParams.get('callbackUrl');
+          const redirectUrl = callbackUrl || "/";
+          router.push(redirectUrl);
+        }
+      } catch (error) {
+        // Usuario no autenticado, continuar con el login
+      }
+    };
+
+    checkAuth();
+  }, [router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +55,23 @@ export default function LoginPage() {
     try {
       setLoading(true);
       await loginAdmin({ email, password });
-      router.push("/");
+      
+      // Obtener la URL de callback si existe
+      const callbackUrl = searchParams.get('callbackUrl');
+      const redirectUrl = callbackUrl || "/";
+      
+      // Pequeño delay para asegurar que la cookie se haya establecido
+      setRedirecting(true);
+      setTimeout(() => {
+        // Intentar navegar primero
+        try {
+          router.push(redirectUrl);
+        } catch (navError) {
+          // Si la navegación falla, usar window.location para forzar la navegación
+          window.location.href = redirectUrl;
+        }
+      }, 200);
+      
     } catch (err: any) {
       setError(err.message || "Error al iniciar sesión");
     } finally {
@@ -88,12 +136,12 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || redirecting}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
+                loading || redirecting ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
               } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
             >
-              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+              {loading ? "Iniciando sesión..." : redirecting ? "Redirigiendo..." : "Iniciar Sesión"}
             </button>
           </div>
         </form>
