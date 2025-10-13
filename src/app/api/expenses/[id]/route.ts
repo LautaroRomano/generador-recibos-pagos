@@ -10,9 +10,14 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const expense = await prisma.expense.findUnique({
-      where: { id },
+    const expenses = await prisma.expense.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
     });
+    const number = expenses.findIndex((expense) => expense.id === id) + 1;
+    const expense = expenses.find((expense) => expense.id === id);
+
 
     if (!expense) {
       return NextResponse.json(
@@ -21,7 +26,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(expense);
+    return NextResponse.json({ ...expense, number });
   } catch (error) {
     console.error("Error fetching expense:", error);
     return NextResponse.json(

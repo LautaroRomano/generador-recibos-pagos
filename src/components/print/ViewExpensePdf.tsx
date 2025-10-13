@@ -7,7 +7,7 @@ import { PDFViewer } from "@react-pdf/renderer";
 import { PDFExpenseReceipt } from "@/components/PDFExpenseReceipt";
 
 export default function ViewExpensePdf({ id }: { id: string }) {
-  const [expense, setExpense] = useState<Expense | null>(null);
+  const [expense, setExpense] = useState<Expense & { number: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -17,7 +17,7 @@ export default function ViewExpensePdf({ id }: { id: string }) {
       try {
         // Obtener el gasto
         const expenseData = await expenseApi.getById(id);
-        setExpense(expenseData);
+        setExpense(expenseData as Expense & { number: number });
 
         setLoading(false);
       } catch (err) {
@@ -82,7 +82,7 @@ export default function ViewExpensePdf({ id }: { id: string }) {
             receiptUrl={expense.receiptUrl || undefined}
             notes={expense.notes || undefined}
             formattedDate={formattedDate}
-            number={1} // Por ahora usamos 1, podríamos agregar un campo number al modelo Expense
+            number={expense.number}
           />
         </PDFViewer>
       </div>
