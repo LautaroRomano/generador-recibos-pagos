@@ -292,9 +292,9 @@ const SingleExpense = ({
                     </Text>
                 </View>
                 <View style={styles.receiptInfoRight}>
-                    <Text>
-                        <Text style={styles.receiptInfoLabel}>FECHA: </Text>
-                        {formattedDate}
+                    <Text >
+                        <Text style={styles.receiptInfoLabel}>MONTO PAGADO: </Text>
+                        {formattedAmount}
                     </Text>
                 </View>
             </View>
@@ -327,6 +327,14 @@ const SingleExpense = ({
                         <View style={styles.clientRow}>
                             <Text style={styles.clientLabel}>Recibo:</Text>
                             <Text style={styles.clientText}>{receiptUrl}</Text>
+                        </View>
+                    )}
+                </View>
+                <View style={styles.clientRowContainer}>
+                    {formattedDate && (
+                        <View style={styles.clientRow}>
+                            <Text style={styles.clientLabel}>Fecha:</Text>
+                            <Text style={styles.clientText}>{formattedDate}</Text>
                         </View>
                     )}
                 </View>
