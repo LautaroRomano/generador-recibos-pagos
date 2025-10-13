@@ -70,9 +70,9 @@ export default function ViewExpensePdf({ id }: { id: string }) {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden min-w-[calc(100vw-100px)]">
+    <div className="flex flex-col overflow-hidden min-w-[calc(100vw-250px)]]">
       {/* Visor del PDF */}
-      <div className="w-full h-[calc(100vh-100px)] p-4">
+      <div className="w-[calc(100vw-250px)] h-[calc(100vh-100px)] p-4">
         <PDFViewer style={{ width: "100%", height: "100vh" }}>
           <PDFExpenseReceipt
             description={expense.description}
