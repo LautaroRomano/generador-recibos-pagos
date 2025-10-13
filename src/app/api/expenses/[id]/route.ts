@@ -3,6 +3,34 @@ import { PrismaClient } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 
+// GET /api/expenses/[id] - Obtener un gasto por ID
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const expense = await prisma.expense.findUnique({
+      where: { id },
+    });
+
+    if (!expense) {
+      return NextResponse.json(
+        { error: "Gasto no encontrado" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(expense);
+  } catch (error) {
+    console.error("Error fetching expense:", error);
+    return NextResponse.json(
+      { error: "Error al obtener el gasto" },
+      { status: 500 }
+    );
+  }
+}
+
 // PUT /api/expenses/[id] - Actualizar un gasto
 export async function PUT(
   request: NextRequest,

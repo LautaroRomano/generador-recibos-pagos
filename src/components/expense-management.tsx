@@ -15,6 +15,7 @@ export default function ExpenseManagement() {
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<"weekly" | "monthly" | "yearly">("monthly");
+  const [activeTab, setActiveTab] = useState<"form" | "stats" | "list">("form");
 
   const getExpenses = async () => {
     try {
@@ -100,60 +101,114 @@ export default function ExpenseManagement() {
     setIsEditModalOpen(true);
   };
 
+  // Función para imprimir el comprobante de gasto
+  const handlePrintExpense = (expense: Expense) => {
+    // Abrir nueva ventana con el PDF del gasto
+    window.open(`/expenses/print/${expense.id}`, '_blank');
+  };
+
   return (
-    <div className="space-y-8">
-      <section className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4">Gestión de Gastos Empresariales</h2>
-        <ExpenseForm onAddExpense={handleAddExpense} />
-      </section>
-
-      <section className="bg-white p-6 rounded-lg shadow-md">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-medium">Estadísticas y Balance</h3>
-          <div className="flex gap-2">
+    <div className="space-y-6">
+      {/* Navegación de Tabs */}
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="border-b border-gray-200">
+          <nav className="flex space-x-8 px-6" aria-label="Tabs">
             <button
-              onClick={() => setSelectedPeriod("weekly")}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${
-                selectedPeriod === "weekly"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              onClick={() => setActiveTab("form")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "form"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              Semanal
+              Gestión de Gastos
             </button>
             <button
-              onClick={() => setSelectedPeriod("monthly")}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${
-                selectedPeriod === "monthly"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              onClick={() => setActiveTab("stats")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "stats"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              Mensual
+              Estadísticas y Balance
             </button>
             <button
-              onClick={() => setSelectedPeriod("yearly")}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${
-                selectedPeriod === "yearly"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              onClick={() => setActiveTab("list")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "list"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              Anual
+              Listado de Gastos
             </button>
-          </div>
+          </nav>
         </div>
-        {stats && <ExpenseStats stats={stats} period={selectedPeriod} />}
-      </section>
 
-      <section className="bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-xl font-medium mb-4">Listado de Gastos</h3>
-        <ExpenseTable
-          expenses={expenses}
-          onEditExpense={handleOpenEditModal}
-          onDeleteExpense={handleDeleteExpense}
-        />
-      </section>
+        {/* Contenido de las Tabs */}
+        <div className="p-6">
+          {activeTab === "form" && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Gestión de Gastos</h2>
+              <ExpenseForm onAddExpense={handleAddExpense} />
+            </div>
+          )}
+
+          {activeTab === "stats" && (
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-medium">Estadísticas y Balance</h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSelectedPeriod("weekly")}
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${
+                      selectedPeriod === "weekly"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Semanal
+                  </button>
+                  <button
+                    onClick={() => setSelectedPeriod("monthly")}
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${
+                      selectedPeriod === "monthly"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Mensual
+                  </button>
+                  <button
+                    onClick={() => setSelectedPeriod("yearly")}
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${
+                      selectedPeriod === "yearly"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Anual
+                  </button>
+                </div>
+              </div>
+              {stats && <ExpenseStats stats={stats} period={selectedPeriod} />}
+            </div>
+          )}
+
+          {activeTab === "list" && (
+            <div>
+              <h3 className="text-xl font-medium mb-4">Listado de Gastos</h3>
+              <ExpenseTable
+                expenses={expenses}
+                onEditExpense={handleOpenEditModal}
+                onDeleteExpense={handleDeleteExpense}
+                onPrintExpense={handlePrintExpense}
+              />
+            </div>
+          )}
+        </div>
+      </div>
 
       <EditExpenseModal
         isOpen={isEditModalOpen}

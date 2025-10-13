@@ -61,6 +61,7 @@ export async function logoutAdmin(): Promise<void> {
 
 /**
  * Get the current admin user from localStorage
+ * This is a fallback method - the main authentication is handled by JWT cookies
  */
 export function getCurrentAdmin(): AdminUser | null {
   if (typeof window === 'undefined') {
@@ -75,6 +76,26 @@ export function getCurrentAdmin(): AdminUser | null {
   try {
     return JSON.parse(adminData) as AdminUser;
   } catch {
+    return null;
+  }
+}
+
+/**
+ * Check if user is authenticated by making a request to the server
+ * This is more reliable than just checking localStorage
+ */
+export async function checkAuthStatus(): Promise<AdminUser | null> {
+  try {
+    const response = await axios.get('/api/admin/me');
+    if (response.data.success && response.data.admin) {
+      // Update localStorage with fresh data
+      localStorage.setItem('adminUser', JSON.stringify(response.data.admin));
+      return response.data.admin;
+    }
+    return null;
+  } catch (error) {
+    // If the request fails, clear localStorage
+    localStorage.removeItem('adminUser');
     return null;
   }
 }

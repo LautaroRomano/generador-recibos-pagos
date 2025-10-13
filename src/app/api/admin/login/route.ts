@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword, verifyPassword } from '@/lib/auth';
-import { v4 as uuidv4 } from 'uuid';
+import { generateJWT } from '@/lib/jwt';
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,8 +47,12 @@ export async function POST(request: NextRequest) {
   }
 
 
-    // Create a session token
-    const sessionToken = uuidv4();
+    // Create JWT token
+    const jwtToken = await generateJWT({
+      adminId: admin.id,
+      email: admin.email,
+      name: admin.name || undefined,
+    });
     
     // Create response
     const response = NextResponse.json({
@@ -60,10 +64,10 @@ export async function POST(request: NextRequest) {
       },
     });
     
-    // Set secure HTTP-only cookie
+    // Set secure HTTP-only cookie with JWT token
     response.cookies.set({
-      name: 'admin_session',
-      value: sessionToken,
+      name: 'admin_token',
+      value: jwtToken,
       httpOnly: true,
       path: '/',
       sameSite: 'lax',

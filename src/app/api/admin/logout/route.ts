@@ -7,8 +7,8 @@ export async function POST(request: NextRequest) {
       success: true,
     });
     
-    // Delete the admin_session cookie
-    response.cookies.delete('admin_session');
+    // Delete the admin_token cookie
+    response.cookies.delete('admin_token');
     
     return response;
   } catch (error) {

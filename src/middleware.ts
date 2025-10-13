@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyJWT } from '@/lib/jwt';
 
 // Define las rutas públicas que no necesitan autenticación
 const publicRoutes = ['/login','/logo.jpg','/favicon.ico','/robots.txt','/sitemap.xml'];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Si es una ruta pública, permitir el acceso
@@ -17,14 +18,21 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Verificar si existe la cookie de sesión
-  const adminSession = request.cookies.get('admin_session');
+  // Verificar el token JWT directamente (sin Prisma en middleware)
+  const token = request.cookies.get('admin_token')?.value;
   
-  // Si no hay sesión, redirigir al login
-  if (!adminSession) {
+  if (!token) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    // Agregar la URL original como parámetro para redirigir después del login
+    url.search = `?callbackUrl=${encodeURIComponent(request.url)}`;
+    return NextResponse.redirect(url);
+  }
+
+  // Verificar que el JWT sea válido
+  const payload = await verifyJWT(token);
+  if (!payload) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
     url.search = `?callbackUrl=${encodeURIComponent(request.url)}`;
     return NextResponse.redirect(url);
   }

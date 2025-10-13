@@ -6,18 +6,20 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Trash2, ExternalLink } from "lucide-react";
+import { Edit, Trash2, ExternalLink, Printer } from "lucide-react";
 
 interface ExpenseTableProps {
   expenses: Expense[];
   onEditExpense: (expense: Expense) => void;
   onDeleteExpense: (id: string) => void;
+  onPrintExpense: (expense: Expense) => void;
 }
 
 export default function ExpenseTable({ 
   expenses, 
   onEditExpense, 
-  onDeleteExpense 
+  onDeleteExpense,
+  onPrintExpense
 }: ExpenseTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -212,8 +214,18 @@ export default function ExpenseTable({
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={() => onPrintExpense(expense)}
+                      className="text-green-600 hover:text-green-800"
+                      title="Imprimir comprobante"
+                    >
+                      <Printer className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => onEditExpense(expense)}
                       className="text-blue-600 hover:text-blue-800"
+                      title="Editar gasto"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -222,6 +234,7 @@ export default function ExpenseTable({
                       size="sm"
                       onClick={() => handleDelete(expense.id)}
                       className="text-red-600 hover:text-red-800"
+                      title="Eliminar gasto"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
