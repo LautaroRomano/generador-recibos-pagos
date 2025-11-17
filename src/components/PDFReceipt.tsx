@@ -184,15 +184,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   footerRight: {
+    display: "flex",
+    flexDirection: "column",
     width: "50%",
-    textAlign: "right",
+    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   signature: {
     borderTop: "1px solid #333",
     width: 100,
-    marginLeft: "auto",
   },
   signatureText: {
+    display: "flex",
     marginTop: 6,
     color: "#555",
     fontSize: 9,
@@ -252,7 +256,32 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
   },
+  cutLine: {
+    width: 1,
+    marginHorizontal: 10,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    flexGrow: 1,
+  },
+  cutLineSegment: {
+    width: 1,
+    backgroundColor: "#999",
+    height: 6,
+    marginBottom: 3,
+    marginRight: 18,
+  },
 });
+
+// Componente para la línea punteada de corte
+const CutLine = () => {
+  // Crear múltiples segmentos para simular una línea punteada vertical
+  // Aproximadamente 80 segmentos para cubrir toda la altura de la página A4 landscape
+  const segments = Array.from({ length: 80 }, (_, i) => (
+    <View key={i} style={styles.cutLineSegment} />
+  ));
+  
+  return <View style={styles.cutLine}>{segments}</View>;
+};
 
 // Componente para un recibo individual
 const SingleReceipt = ({
@@ -380,7 +409,7 @@ const SingleReceipt = ({
         </View>
         <View style={styles.footerRight}>
           <View style={styles.signature} />
-          <Text style={styles.signatureText}>Firma y Aclaración</Text>
+          <Text style={styles.signatureText}>Tesorero: Firma y Aclaración</Text>
         </View>
       </View>
 
@@ -422,6 +451,7 @@ export const PDFReceipt = ({
           number={number}
           concepts={concepts}
         />
+        <CutLine />
         <SingleReceipt
           clientName={clientName}
           clientStreet={clientStreet}
