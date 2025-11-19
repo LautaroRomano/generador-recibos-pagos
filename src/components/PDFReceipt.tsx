@@ -44,10 +44,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "stretch",
   },
   receiptContainer: {
     width: "48%",
     padding: 15,
+    flexShrink: 0,
   },
   header: {
     textAlign: "center",
@@ -259,28 +261,37 @@ const styles = StyleSheet.create({
   cutLine: {
     width: 1,
     marginHorizontal: 10,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    flexGrow: 1,
+    flexShrink: 0,
+    flexGrow: 0,
   },
   cutLineSegment: {
-    width: 1,
+    width: 0.7,
     backgroundColor: "#999",
-    height: 6,
-    marginBottom: 3,
     marginRight: 18,
+    height: 5,
+    marginBottom: 2,
   },
 });
 
 // Componente para la línea punteada de corte
 const CutLine = () => {
-  // Crear múltiples segmentos para simular una línea punteada vertical
-  // Aproximadamente 80 segmentos para cubrir toda la altura de la página A4 landscape
-  const segments = Array.from({ length: 80 }, (_, i) => (
-    <View key={i} style={styles.cutLineSegment} />
-  ));
+  // Crear segmentos de manera eficiente para evitar problemas de paginación
+  // Reducir el número de segmentos para evitar overflow
+  // Usar ~60 segmentos que cubran la altura sin exceder
+  const segmentCount = 20;
+  const segments = [];
   
-  return <View style={styles.cutLine}>{segments}</View>;
+  for (let i = 0; i < segmentCount; i++) {
+    segments.push(
+      <View key={i} style={{...styles.cutLineSegment, marginTop: i === 9 ? 400 : 0}} />
+    );
+  }
+  
+  return (
+    <View style={styles.cutLine}>
+      {segments}
+    </View>
+  );
 };
 
 // Componente para un recibo individual
