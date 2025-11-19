@@ -114,7 +114,7 @@ export default function ReceiptsList() {
   return (
     <div className="space-y-4">
       <div
-        className={`absolute top-0 left-0 w-full h-full bg-black/50 z-50 ${printPdf ? "block" : "hidden"}`}
+        className={`fixed top-0 left-0 w-full h-full bg-black/50 z-50 ${printPdf ? "block" : "hidden"}`}
       >
         <div className="flex justify-center items-center h-full">
           <div className="bg-white rounded-lg shadow-md">

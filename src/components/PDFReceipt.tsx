@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
     padding: 8,
     borderRadius: 4,
-    marginBottom: 15,
+    marginBottom: 10,
     fontSize: 10,
     justifyContent: "space-between",
   },
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   clientText: {
     color: "#333",
-    width: 120,
+    width: 105,
   },
   amountRow: {
     flexDirection: "row",
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
+    marginTop: 5,
     paddingTop: 15,
     borderTop: "1px solid #ddd",
   },
@@ -423,10 +423,6 @@ const SingleReceipt = ({
           <Text style={styles.signatureText}>Tesorero: Firma y Aclaración</Text>
         </View>
       </View>
-
-      <Text style={styles.disclaimer}>
-        Documento no válido como factura - Impresión: {printDate}
-      </Text>
     </View>
   );
 };
