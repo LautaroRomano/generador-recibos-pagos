@@ -1,5 +1,12 @@
 import axios from 'axios';
 
+function getStorage(): Storage | null {
+  if (typeof window !== 'undefined' && typeof window.localStorage?.getItem === 'function') {
+    return window.localStorage;
+  }
+  return null;
+}
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -33,8 +40,7 @@ export async function loginAdmin({ email, password }: LoginCredentials): Promise
     });
     
     if (response.data.success) {
-      // Store admin user data in localStorage
-      localStorage.setItem('adminUser', JSON.stringify(response.data.admin));
+      getStorage()?.setItem('adminUser', JSON.stringify(response.data.admin));
       return response.data.admin;
     } else {
       throw new Error('Login failed');
@@ -50,8 +56,7 @@ export async function loginAdmin({ email, password }: LoginCredentials): Promise
  */
 export async function logoutAdmin(): Promise<void> {
   try {
-    // Clear local storage
-    localStorage.removeItem('adminUser');
+    getStorage()?.removeItem('adminUser');
     // Call logout API to clear cookies
     await axios.post('/api/admin/logout');
   } catch (error) {
@@ -64,15 +69,11 @@ export async function logoutAdmin(): Promise<void> {
  * This is a fallback method - the main authentication is handled by JWT cookies
  */
 export function getCurrentAdmin(): AdminUser | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  
-  const adminData = localStorage.getItem('adminUser');
+  const adminData = getStorage()?.getItem('adminUser');
   if (!adminData) {
     return null;
   }
-  
+
   try {
     return JSON.parse(adminData) as AdminUser;
   } catch {
@@ -85,17 +86,19 @@ export function getCurrentAdmin(): AdminUser | null {
  * This is more reliable than just checking localStorage
  */
 export async function checkAuthStatus(): Promise<AdminUser | null> {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   try {
     const response = await axios.get('/api/admin/me');
     if (response.data.success && response.data.admin) {
-      // Update localStorage with fresh data
-      localStorage.setItem('adminUser', JSON.stringify(response.data.admin));
+      getStorage()?.setItem('adminUser', JSON.stringify(response.data.admin));
       return response.data.admin;
     }
     return null;
   } catch (error) {
-    // If the request fails, clear localStorage
-    localStorage.removeItem('adminUser');
+    getStorage()?.removeItem('adminUser');
     return null;
   }
 }

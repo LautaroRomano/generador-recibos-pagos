@@ -8,11 +8,15 @@ import { toast } from "sonner";
 import { expenseApi } from "@/lib/api";
 import { Expense } from "@/types";
 import EditExpenseModal from "./edit-expense-modal";
+import PrintExpenseListModal from "./print-expense-list-modal";
+import { Printer } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function ExpenseManagement() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [isPrintListModalOpen, setIsPrintListModalOpen] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<"weekly" | "monthly" | "yearly">("monthly");
   const [activeTab, setActiveTab] = useState<"form" | "stats" | "list">("form");
@@ -198,7 +202,16 @@ export default function ExpenseManagement() {
 
           {activeTab === "list" && (
             <div>
-              <h3 className="text-xl font-medium mb-4">Listado de Gastos</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-medium">Listado de Gastos</h3>
+                <Button
+                  onClick={() => setIsPrintListModalOpen(true)}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Imprimir Listado
+                </Button>
+              </div>
               <ExpenseTable
                 expenses={expenses}
                 onEditExpense={handleOpenEditModal}
@@ -215,6 +228,12 @@ export default function ExpenseManagement() {
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleEditExpense}
         expense={selectedExpense}
+      />
+
+      <PrintExpenseListModal
+        isOpen={isPrintListModalOpen}
+        onClose={() => setIsPrintListModalOpen(false)}
+        expenses={expenses}
       />
     </div>
   );

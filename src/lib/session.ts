@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { prisma } from './prisma';
-import { verifyJWT, extractTokenFromCookies, JWTPayload } from './jwt';
+import { verifyJWT, JWTPayload } from './jwt';
 
 /**
  * Obtiene la sesión del servidor a partir del JWT token

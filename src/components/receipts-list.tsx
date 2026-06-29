@@ -10,6 +10,7 @@ import { Printer, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PaymentModal from "./payment-modal";
 import EditPaymentModal from "./edit-payment-modal";
+import PrintReceiptListModal from "./print-receipt-list-modal";
 import ViewPdf from "./print/ViewPdf";
 
 export default function ReceiptsList() {
@@ -22,6 +23,7 @@ export default function ReceiptsList() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [isPrintListModalOpen, setIsPrintListModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -183,8 +185,17 @@ export default function ReceiptsList() {
           <div className="text-sm text-gray-600">
             Mostrando {filteredReceipts.length} recibos
           </div>
-          <div className="text-lg font-semibold">
-            Total: ${totalAmount.toLocaleString()}
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={() => setIsPrintListModalOpen(true)}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Printer className="h-4 w-4 mr-2" />
+              Imprimir Listado
+            </Button>
+            <div className="text-lg font-semibold">
+              Total: ${totalAmount.toLocaleString()}
+            </div>
           </div>
         </div>
 
@@ -295,6 +306,12 @@ export default function ReceiptsList() {
         }}
         onUpdatePayment={handleUpdatePayment}
         payment={selectedPayment}
+      />
+
+      <PrintReceiptListModal
+        isOpen={isPrintListModalOpen}
+        onClose={() => setIsPrintListModalOpen(false)}
+        receipts={receipts}
       />
     </div>
   );
