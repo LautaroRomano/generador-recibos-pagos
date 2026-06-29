@@ -12,6 +12,8 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { exportExpensesToExcel } from "@/lib/export-excel";
+import { FileSpreadsheet } from "lucide-react";
 
 const EXPENSE_CATEGORIES = [
   "Servicios Públicos",
@@ -64,6 +66,17 @@ export default function PrintExpenseListModal({
 
     window.open(`/expenses/print-list?${params.toString()}`, "_blank");
     onClose();
+  };
+
+  const handleExportExcel = () => {
+    exportExpensesToExcel(
+      filteredExpenses.map((e) => ({
+        description: e.description,
+        category: e.category,
+        date: e.date,
+        amount: e.amount,
+      }))
+    );
   };
 
   const handleClear = () => {
@@ -138,6 +151,15 @@ export default function PrintExpenseListModal({
         <DialogFooter>
           <Button variant="outline" onClick={handleClear}>
             Limpiar Filtros
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleExportExcel}
+            disabled={filteredExpenses.length === 0}
+            className="text-green-700 border-green-300 hover:bg-green-50"
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Excel
           </Button>
           <Button
             onClick={handlePrint}

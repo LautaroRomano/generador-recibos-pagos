@@ -13,6 +13,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { parseISO, isWithinInterval } from "date-fns";
+import { exportReceiptsToExcel } from "@/lib/export-excel";
+import { FileSpreadsheet } from "lucide-react";
 
 interface PrintReceiptListModalProps {
   isOpen: boolean;
@@ -103,6 +105,17 @@ export default function PrintReceiptListModal({
       setAllClients(true);
       setSelectedClientIds(new Set());
     }
+  };
+
+  const handleExportExcel = () => {
+    exportReceiptsToExcel(
+      filteredReceipts.map((r) => ({
+        clientName: r.client?.fullName || "Sin cliente",
+        date: r.date,
+        amount: r.concepts.reduce((s, c) => s + c.amount, 0),
+        paymentType: r.paymentType,
+      }))
+    );
   };
 
   const handlePrint = () => {
@@ -248,6 +261,15 @@ export default function PrintReceiptListModal({
         <DialogFooter>
           <Button variant="outline" onClick={handleClear}>
             Limpiar Filtros
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleExportExcel}
+            disabled={filteredReceipts.length === 0}
+            className="text-green-700 border-green-300 hover:bg-green-50"
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Excel
           </Button>
           <Button
             onClick={handlePrint}
