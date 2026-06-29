@@ -74,7 +74,7 @@ export default function ViewReceiptListPdf() {
     ? receipts
         .filter((r) => clientIdSet.has(r.clientId))
         .map((r) => r.client?.fullName)
-        .filter(Boolean)
+        .filter((name): name is string => !!name)
     : [];
   const uniqueClientNames = [...new Set(clientNames)];
 
